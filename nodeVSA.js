@@ -27,6 +27,7 @@ let https = require("https");
 let stockData = {};
 let myTickerList = ["GPRO", "TSLA", "AMZN"];
 
+
 let getStockData = (ticker) => {
   const CONFIG = {
     URL : "www.alphavantage.co",
@@ -51,9 +52,8 @@ let getStockData = (ticker) => {
     
     res.on("end", () => {
       console.log("Data transmission complete for " + ticker + ".");
-      let fullData = JSON.parse(data);
-      let strippedData = fullData["Time Series (Daily)"];
-      stockData[ticker] = strippedData;
+      let rawDataForCurrentStock = JSON.parse(data);
+      stockData[ticker] = transformData(rawDataForCurrentStock);
       dataHasLoaded(ticker);
     });
     
@@ -69,6 +69,22 @@ function fetchDataForAllStocks(arrayOfStockTickers) {
     getStockData(arrayOfStockTickers[i]);
   }
 };
+
+// Takes a parsed JSON object, and transforms it.
+function transformData (stock) {
+  let transformed = [];
+  let timeSeries = stock["Time Series (Daily)"];
+  for (let date in timeSeries) {
+    let dayOfData = {};
+    dayOfData.date = date;
+    dayOfData.h = timeSeries[date]["2. high"];
+    dayOfData.l = timeSeries[date]["3. low"];
+    dayOfData.c = timeSeries[date]["4. close"];
+    dayOfData.v = timeSeries[date]["5. volume"];
+    transformed.push(dayOfData);
+  }
+  return transformed;
+}
 
 // Notifies user when one stock's data has finished loading into memory.
 function dataHasLoaded (ticker) {
