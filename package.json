@@ -1,0 +1,14 @@
+{
+  "name": "node_vsa",
+  "version": "1.0.0",
+  "description": "Downloads stock data to search for supply/demand tests.",
+  "main": "nodeVSA.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Neil Murphy",
+  "license": "ISC",
+  "dependencies": {
+    "https": "^1.0.0",
+  }
+}
