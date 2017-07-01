@@ -25,7 +25,7 @@
 
 let https = require("https");
 let stockData = {};
-let myTickerList = ["GPRO", "TSLA", "AMZN"];
+let myTickerList = ["GPRO"];
 
 
 let getStockData = (ticker) => {
@@ -77,11 +77,56 @@ function transformData (stock) {
   for (let date in timeSeries) {
     let dayOfData = {};
     dayOfData.date = date;
-    dayOfData.h = timeSeries[date]["2. high"];
-    dayOfData.l = timeSeries[date]["3. low"];
-    dayOfData.c = timeSeries[date]["4. close"];
-    dayOfData.v = timeSeries[date]["5. volume"];
+    dayOfData.h = parseFloat(timeSeries[date]["2. high"]);
+    dayOfData.l = parseFloat(timeSeries[date]["3. low"]);
+    dayOfData.c = parseFloat(timeSeries[date]["4. close"]);
+    dayOfData.v = parseFloat(timeSeries[date]["5. volume"]);
+    dayOfData.pivotHigh = false;
+    dayOfData.pivotLow = false;
     transformed.push(dayOfData);
+  }
+  // Reverse array, so most recent day is at last index.
+  transformed = transformed.reverse();
+  // TODO: Ensure data is ordered by date.
+  // transformed = transformed.sort((a, b) => {
+  //   return a.date - b.date;
+  // });
+
+  // Mark pivot Highs
+  for (let i = 1; i < transformed.length; i++) {
+    if (transformed[i+1] !== undefined) { 
+      if (
+          // If this day's high is greater than the prior day's high
+          transformed[i].h > transformed[i-1].h &&
+          // this day's high is also greater than the next day's high, 
+          transformed[i].h > transformed[i+1].h
+         ) {
+        // Then today is a pivot high.
+        transformed[i].pivotHigh = true;
+      }
+    } else if (transformed[i+1] === undefined) {
+      if (transformed[i].h > transformed[i-1].h) {
+        transformed[i].pivotHigh = true;
+      }
+    }
+  }
+  // Mark pivot Lows
+  for (let i = 1; i < transformed.length; i++) {
+    if (transformed[i+1] !== undefined) { 
+      if (
+          // If this day's high is less than the prior day's high
+          transformed[i].l < transformed[i-1].l &&
+          // this day's high is also less than the next day's high, 
+          transformed[i].l < transformed[i+1].l
+         ) {
+        // Then today is a pivot low.
+        transformed[i].pivotLow = true;
+      }
+    } else if (transformed[i+1] === undefined) {
+    if (transformed[i].l < transformed[i-1].l) {
+      transformed[i].pivotLow = true;
+    }
+  }
   }
   return transformed;
 }
