@@ -53,7 +53,17 @@ let getStockData = (ticker) => {
     res.on("end", () => {
       console.log("Data transmission complete for " + ticker + ".");
       let rawDataForCurrentStock = JSON.parse(data);
-      stockData[ticker] = transformData(rawDataForCurrentStock);
+      // Initialize a new container for this stock...
+      stockData[ticker] = {};
+      // Format our data and add to the container...
+      stockData[ticker]["data"] = transformData(rawDataForCurrentStock);
+      // Mark our pivot highs and lows...
+      markPivots(stockData[ticker]["data"], ticker);
+      // Scan for supply tests...
+      findSupplyTests(stockData[ticker]["pivotLows"], ticker)
+      // Scan for demand tests...
+      findDemandTests(stockData[ticker]["pivotHighs"], ticker)
+      // Notify the user we're done for this ticker.
       dataHasLoaded(ticker);
     });
     
@@ -81,6 +91,7 @@ function transformData (stock) {
     dayOfData.l = parseFloat(timeSeries[date]["3. low"]);
     dayOfData.c = parseFloat(timeSeries[date]["4. close"]);
     dayOfData.v = parseFloat(timeSeries[date]["5. volume"]);
+    // Init signal flags:
     dayOfData.pivotHigh = false;
     dayOfData.pivotLow = false;
     transformed.push(dayOfData);
@@ -92,49 +103,107 @@ function transformData (stock) {
   //   return a.date - b.date;
   // });
 
+  return transformed;
+}
+
+function markPivots (daysArray, ticker) {
+  // Init pivotHighs and pivotLows arrays if undefined.
+  stockData[ticker]["pivotHighs"] = stockData[ticker]["pivotHighs"] || [];
+  stockData[ticker]["pivotLows"] = stockData[ticker]["pivotLows"] || [];
+
   // Mark pivot Highs
-  for (let i = 1; i < transformed.length; i++) {
-    if (transformed[i+1] !== undefined) { 
+  for (let i = 1; i < daysArray.length; i++) {
+    if (daysArray[i+1] !== undefined) { 
       if (
           // If this day's high is greater than the prior day's high
-          transformed[i].h > transformed[i-1].h &&
+          daysArray[i].h > daysArray[i-1].h &&
           // this day's high is also greater than the next day's high, 
-          transformed[i].h > transformed[i+1].h
+          daysArray[i].h > daysArray[i+1].h
          ) {
         // Then today is a pivot high.
-        transformed[i].pivotHigh = true;
+        daysArray[i].pivotHigh = true;
+        stockData[ticker]["pivotHighs"].push(daysArray[i]);
       }
-    } else if (transformed[i+1] === undefined) {
-      if (transformed[i].h > transformed[i-1].h) {
-        transformed[i].pivotHigh = true;
+    } else if (daysArray[i+1] === undefined) {
+      if (daysArray[i].h > daysArray[i-1].h) {
+        daysArray[i].pivotHigh = true;
+        stockData[ticker]["pivotHighs"].push(daysArray[i]);
       }
     }
   }
   // Mark pivot Lows
-  for (let i = 1; i < transformed.length; i++) {
-    if (transformed[i+1] !== undefined) { 
+  for (let i = 1; i < daysArray.length; i++) {
+    if (daysArray[i+1] !== undefined) { 
       if (
           // If this day's high is less than the prior day's high
-          transformed[i].l < transformed[i-1].l &&
+          daysArray[i].l < daysArray[i-1].l &&
           // this day's high is also less than the next day's high, 
-          transformed[i].l < transformed[i+1].l
+          daysArray[i].l < daysArray[i+1].l
          ) {
         // Then today is a pivot low.
-        transformed[i].pivotLow = true;
+        daysArray[i].pivotLow = true;
+        stockData[ticker]["pivotLows"].push(daysArray[i]);
       }
-    } else if (transformed[i+1] === undefined) {
-    if (transformed[i].l < transformed[i-1].l) {
-      transformed[i].pivotLow = true;
+    } else if (daysArray[i+1] === undefined) {
+      if (daysArray[i].l < daysArray[i-1].l) {
+        daysArray[i].pivotLow = true;
+        stockData[ticker]["pivotLows"].push(daysArray[i]);
+      }
     }
   }
+}
+
+function findSupplyTests (pivots, ticker) {
+  // Init supplyTests arrays if undefined.
+  stockData[ticker]["supplyTests"] = stockData[ticker]["supplyTests"] || [];
+
+  // Find supply tests.
+  for (let i = 1; i < pivots.length; i++) {
+    // if previous pivot's volume is greater than current pivot's volume, and 
+    // the previous pivot's low is less than current pivot's low
+    if (
+        pivots[i-1].v > pivots[i].v &&
+        pivots[i-1].l < pivots[i].l &&
+        // current pivot's low is less than previous pivot's high
+        pivots[i].l < pivots[i-1].h
+       ) {
+      stockData[ticker]["supplyTests"].push(pivots[i]);
+    }
   }
-  return transformed;
+}
+
+function findDemandTests (pivots, ticker) {
+  // Init demandTests arrays if undefined.
+  stockData[ticker]["demandTests"] = stockData[ticker]["demandTests"] || [];
+
+  // Find supply tests.
+  for (let i = 1; i < pivots.length; i++) {
+    // if previous pivot's volume is greater than current pivot's volume, and 
+    // the previous pivot's high is greater than current pivot's high
+    if (
+        pivots[i-1].v > pivots[i].v &&
+        pivots[i-1].h > pivots[i].h &&
+        // current pivot's high is greater than previous pivot's low
+        pivots[i].h > pivots[i-1].l
+       ) {
+      stockData[ticker]["demandTests"].push(pivots[i]);
+    }
+  }
 }
 
 // Notifies user when one stock's data has finished loading into memory.
 function dataHasLoaded (ticker) {
-  console.log("Storing data locally for " + ticker + ".", "\n");
-  console.log(stockData);
+  console.log("Possible supply tests for", ticker, ":");
+
+  for (let i = 0; i < stockData[ticker]["supplyTests"].length; i++) {
+    console.log(stockData[ticker]["supplyTests"][i].date);
+  }
+
+  console.log("Possible demand tests for", ticker, ":");
+
+  for (let i = 0; i < stockData[ticker]["demandTests"].length; i++) {
+    console.log(stockData[ticker]["demandTests"][i].date);
+  }
 };
 
 fetchDataForAllStocks(myTickerList);
