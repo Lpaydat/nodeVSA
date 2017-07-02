@@ -25,8 +25,7 @@
 
 let https = require("https");
 let stockData = {};
-let myTickerList = ["GPRO"];
-
+let myTickerList = require("./stockList.js");
 
 let getStockData = (ticker) => {
   const CONFIG = {
@@ -46,12 +45,10 @@ let getStockData = (ticker) => {
     let data = "";
 
     res.on("data", (chunk) => {
-      console.log("Data chunk received for " + ticker + ".");
       return data += chunk;
     });
     
     res.on("end", () => {
-      console.log("Data transmission complete for " + ticker + ".");
       let rawDataForCurrentStock = JSON.parse(data);
       // Initialize a new container for this stock...
       stockData[ticker] = {};
@@ -193,17 +190,31 @@ function findDemandTests (pivots, ticker) {
 
 // Notifies user when one stock's data has finished loading into memory.
 function dataHasLoaded (ticker) {
-  console.log("Possible supply tests for", ticker, ":");
+  // Wait until we have all the data loaded for all stocks.
+  // while (Object.keys(stockData).length !== myTickerList.length) {
 
-  for (let i = 0; i < stockData[ticker]["supplyTests"].length; i++) {
-    console.log(stockData[ticker]["supplyTests"][i].date);
-  }
+  // }
 
-  console.log("Possible demand tests for", ticker, ":");
-
-  for (let i = 0; i < stockData[ticker]["demandTests"].length; i++) {
-    console.log(stockData[ticker]["demandTests"][i].date);
-  }
+  let st = stockData[ticker]["supplyTests"];
+  // Show most recent supply test
+  console.log("long", ticker, st[st.length-1].date);
+  
+  let dt = stockData[ticker]["demandTests"];
+  // Show most recent supply test
+  console.log("short", ticker, dt[dt.length-1].date);
 };
 
 fetchDataForAllStocks(myTickerList);
+
+
+
+/*
+
+  TODO:
+    Promisify, so we can:
+      sort the date in different ways instead of by stock.
+      load more than 10 stocks.
+    Add percentage multiplier limit to prior pivot, so we remove false signals.
+    Search all prior pivots for a stock to grab any within X percent of current pivot price.
+    Store supply/demand test signals in a single object for sorting; stockData.signals
+*/
