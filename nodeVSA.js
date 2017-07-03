@@ -69,12 +69,14 @@ let getStockData = (ticker) => {
     })
 };
 
+
 // Takes array of stock symbols as strings and fetches data for each.
-function fetchDataForAllStocks(arrayOfStockTickers) {
+function fetchAndTransformDataForAllStocks(arrayOfStockTickers) {
   for (let i = 0; i < arrayOfStockTickers.length; i++) {
     getStockData(arrayOfStockTickers[i]);
   }
 };
+
 
 // Takes a parsed JSON object, and transforms it.
 function transformData (stock) {
@@ -87,20 +89,14 @@ function transformData (stock) {
     dayOfData.l = parseFloat(timeSeries[date]["3. low"]);
     dayOfData.c = parseFloat(timeSeries[date]["4. close"]);
     dayOfData.v = parseFloat(timeSeries[date]["5. volume"]);
-    // Init signal flags:
     dayOfData.pivotHigh = false;
     dayOfData.pivotLow = false;
     transformed.push(dayOfData);
   }
   // Reverse array, so most recent day is at last index.
-  transformed = transformed.reverse();
-  // TODO: Ensure data is ordered by date.
-  // transformed = transformed.sort((a, b) => {
-  //   return a.date - b.date;
-  // });
-
-  return transformed;
+  return transformed.reverse();
 }
+
 
 function markPivots (daysArray, ticker) {
   // Init pivotHighs and pivotLows arrays if undefined.
@@ -109,19 +105,19 @@ function markPivots (daysArray, ticker) {
 
   // Mark pivot Highs
   for (let i = 1; i < daysArray.length; i++) {
-    if (daysArray[i+1] !== undefined) { 
-      if (
-          // If this day's high is greater than the prior day's high
-          daysArray[i].h > daysArray[i-1].h &&
-          // this day's high is also greater than the next day's high, 
-          daysArray[i].h > daysArray[i+1].h
-         ) {
-        // Then today is a pivot high.
+    if (daysArray[i+1] === undefined) { // handle most recent day
+      if (daysArray[i].h > daysArray[i-1].h) {
         daysArray[i].pivotHigh = true;
         stockData[ticker]["pivotHighs"].push(daysArray[i]);
       }
-    } else if (daysArray[i+1] === undefined) {
-      if (daysArray[i].h > daysArray[i-1].h) {
+    } else {
+      if (
+        // If this day's high is greater than the prior day's high
+        daysArray[i].h > daysArray[i-1].h &&
+        // this day's high is also greater than the next day's high,
+        daysArray[i].h > daysArray[i+1].h
+      ) {
+        // Then today is a pivot high.
         daysArray[i].pivotHigh = true;
         stockData[ticker]["pivotHighs"].push(daysArray[i]);
       }
@@ -129,19 +125,18 @@ function markPivots (daysArray, ticker) {
   }
   // Mark pivot Lows
   for (let i = 1; i < daysArray.length; i++) {
-    if (daysArray[i+1] !== undefined) { 
-      if (
-          // If this day's high is less than the prior day's high
-          daysArray[i].l < daysArray[i-1].l &&
-          // this day's high is also less than the next day's high, 
-          daysArray[i].l < daysArray[i+1].l
-         ) {
-        // Then today is a pivot low.
+    if (daysArray[i+1] === undefined) { // handle most recent day
+      if (daysArray[i].l < daysArray[i-1].l) {
         daysArray[i].pivotLow = true;
         stockData[ticker]["pivotLows"].push(daysArray[i]);
       }
-    } else if (daysArray[i+1] === undefined) {
-      if (daysArray[i].l < daysArray[i-1].l) {
+    } else {
+      if (
+        // If this day's high is less than the prior day's high
+        daysArray[i].l < daysArray[i-1].l &&
+        // this day's high is also less than the next day's high,
+        daysArray[i].l < daysArray[i+1].l
+      ) { // Then today is a pivot low.
         daysArray[i].pivotLow = true;
         stockData[ticker]["pivotLows"].push(daysArray[i]);
       }
@@ -201,7 +196,7 @@ function dataHasLoaded (ticker) {
   console.log("short", ticker, dt[dt.length-1].date);
 };
 
-fetchDataForAllStocks(myTickerList);
+fetchAndTransformDataForAllStocks(myTickerList);
 
 
 
@@ -212,6 +207,10 @@ fetchDataForAllStocks(myTickerList);
   Promisify helper functions, so we can:
     - do interesting things once all of the stock data has fully loaded.
     - sort the date in different ways instead of by stock.
+
+  Add rate-limiting.
+    ~200 requests per minute; let's call it 195.
+    (60,000 ms/minute)/195 requests = 307ms per request.
     
   Find a better way to detect if pivot is within the range of any prior pivot. 
     Add percentage multiplier limit?
