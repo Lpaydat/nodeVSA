@@ -1,30 +1,23 @@
-let exampleResponseBodyFromAlphaVantage = { 
-  'Meta Data': {
-    '1. Information': 'Daily Prices (open, high, low, close) and Volumes',
-    '2. Symbol': 'GPRO',
-    '3. Last Refreshed': '2017-06-30',
-    '4. Output Size': 'Compact',
-    '5. Time Zone': 'US/Eastern' 
-  },
-  'Time Series (Daily)': { 
-    '2017-06-30': { 
-      '1. open': '8.2600',
-      '2. high': '8.3100',
-      '3. low': '8.0900',
-      '4. close': '8.1300',
-      '5. volume': '1788848' 
-    },
-    '2017-06-29': { 
-      '1. open': '8.2300',
-      '2. high': '8.3300',
-      '3. low': '8.1500',
-      '4. close': '8.2800',
-      '5. volume': '1316299' }
-    }
-  }
-};
+/*
+  Illustrates the structure of the data.
+*/
 
-let exampleTransformedDataFormat = {
+let stockDataSample = {
+  // We store an array of all signals, so we can filter by
+  // A particular date, symbol, or trade direction.
+  allSignals: [
+    {
+      date: "06-27-17",
+      symbol: "GPRO",
+      direction: "long"
+    },
+    {
+      date: "06-25-17",
+      symbol: "AAPL",
+      direction: "short"
+    }
+  ],
+  // We also store the complete data per each stock.
   GPRO : {
     data : [
      {
@@ -48,8 +41,37 @@ let exampleTransformedDataFormat = {
     ],
     pivotHighs : [],
     pivotLows : [],
-    supplyTests : [],
-    demandTests : []
+    // These store 
+    supplyTests: [],
+    demandTests: []
+  }
+};
+
+
+// This is the format of the JSON object Alpha Vantage sends.
+let responseBodySample = { 
+  'Meta Data': {
+    '1. Information': 'Daily Prices (open, high, low, close) and Volumes',
+    '2. Symbol': 'GPRO',
+    '3. Last Refreshed': '2017-06-30',
+    '4. Output Size': 'Compact',
+    '5. Time Zone': 'US/Eastern' 
+  },
+  'Time Series (Daily)': { 
+    '2017-06-30': { 
+      '1. open': '8.2600',
+      '2. high': '8.3100',
+      '3. low': '8.0900',
+      '4. close': '8.1300',
+      '5. volume': '1788848' 
+    },
+    '2017-06-29': { 
+      '1. open': '8.2300',
+      '2. high': '8.3300',
+      '3. low': '8.1500',
+      '4. close': '8.2800',
+      '5. volume': '1316299' 
+    }
   }
 };
 

@@ -1,7 +1,7 @@
 /*
-  Goal: Create a a node.js script I can run at 12:30pm to find setups.
+  Goal: Create a a node.js script I can run at 12:30pm to find stock trading setups.
   
-  The setup is basically what Volume Spread Analysis (VSA) calls a supply test.
+  The setup I'm looking for is basically what Volume Spread Analysis (VSA) calls a supply (or demand) test.
   
   In English:
     1. Find a pivot low.
@@ -10,13 +10,13 @@
     4. If the line hits the range of a lower pivot low with higher volume, watch.
     5. When the price exits the current channel, buy.
 
-  The data set below is perfect for an MVP, because it contains two setups.
+  This stock data is perfect for guiding an MVP, because it contains both a long and short setup:
     2017-06-13: short setup
     2017-06-21: long setup
 
-  See http://imgur.com/SHCYUgV for a chart of these two setups.
+    See http://imgur.com/SHCYUgV for a chart of these two setups.
 
-  Data from alphavantage.co's API @ https://www.alphavantage.co/documentation/
+  Data source: alphavantage.co's API @ https://www.alphavantage.co/documentation/
 
   Example URLs with query:
     "https://www.alphavantage.co/query?function=HT_PHASOR&symbol=MSFT&interval=weekly&series_type=close&apikey=demo"
@@ -27,10 +27,12 @@
 */
 
 let rp = require("request-promise");
-let stockData = {};
 let myTickerList = require("./stockList.js");
 let CONFIG = require("./config.js")
+let stockData = {};
 
+
+// Retrieves data for one stock ticker.
 let getStockData = (ticker) => {
 
   console.log("Getting data for: ", "\x1b[34m", ticker, "\x1b[0m");
@@ -45,23 +47,22 @@ let getStockData = (ticker) => {
     },
     transform: transformData
   })
+    // Add our transformed data to a container in storage...
     .then((data) => {
       // Initialize a new container for this stock...
       stockData[ticker] = {};
-      // Format our data and add to the container...
-      // stockData[ticker]["data"] = transformData(data);
       stockData[ticker]["data"] = data;
 
     })
+    // Mark pivot highs and lows in data...
     .then(() => {
-      // Mark our pivot highs and lows...
-      markPivots(stockData[ticker]["data"], ticker);
+      markAllPivots(stockData[ticker]["data"], ticker);
     })
     .then(() => {
       // Scan for supply tests...
-      findSupplyTests(stockData[ticker]["pivotLows"], ticker)
+      scanForSupplyTests(stockData[ticker]["pivotLows"], ticker);
       // Scan for demand tests...
-      findDemandTests(stockData[ticker]["pivotHighs"], ticker)
+      scanForDemandTests(stockData[ticker]["pivotHighs"], ticker);
       // Notify the user we're done for this ticker.
       dataHasLoaded(ticker);
     })
@@ -71,11 +72,11 @@ let getStockData = (ticker) => {
 };
 
 
-// Takes array of stock symbols as strings and fetches data for each.
-// Adds rate-limiting per data source's request.
-// ~200 requests per minute; let's call it 195.
-// (60,000 ms/minute)/195 requests = 307ms per request.
-function fetchAndTransformDataForAllStocks(arrayOfStockTickers) {
+// Fetches data for an array of stock symbols as strings.
+  // Adds rate-limiting per data source's request.
+    // ~200 requests per minute; let's call it 195.
+    // (60,000 ms/minute)/195 requests = 307ms per request.
+function retrieveDataForAllStocks(arrayOfStockTickers) {
   for (let i = 0; i < arrayOfStockTickers.length; i++) {
     setTimeout(getStockData.bind(null, arrayOfStockTickers[i]), i*307);
   }
@@ -83,7 +84,7 @@ function fetchAndTransformDataForAllStocks(arrayOfStockTickers) {
 
 
 // Takes a parsed JSON object, and transforms it.
-// (Passed as the 'transform' option to request-promise.)
+  // (Passed as the 'transform' option to request-promise.)
 function transformData (stock) {
   let transformed = [];
   let timeSeries = stock["Time Series (Daily)"];
@@ -102,7 +103,8 @@ function transformData (stock) {
 }
 
 
-function markPivots (daysArray, ticker) {
+// Identifies pivot highs and lows, and set pivot flags on that day.
+function markAllPivots (daysArray, ticker) {
   // Init pivotHighs and pivotLows arrays if undefined.
   stockData[ticker]["pivotHighs"] = stockData[ticker]["pivotHighs"] || [];
   stockData[ticker]["pivotLows"] = stockData[ticker]["pivotLows"] || [];
@@ -149,58 +151,85 @@ function markPivots (daysArray, ticker) {
 }
 
 
-function findSupplyTests (pivots, ticker) {
-  // Init supplyTests arrays if undefined.
-  stockData[ticker]["supplyTests"] = stockData[ticker]["supplyTests"] || [];
+function scanForSupplyTests (pivots, ticker) {
+  // Init signals array if undefined.
+  stockData.allSignals = stockData.allSignals || [];
 
-  // Find supply tests.
+  // Find supply tests (long).
   for (let i = 1; i < pivots.length; i++) {
     // if previous pivot's volume is greater than current pivot's volume, and 
     // the previous pivot's low is less than current pivot's low
     if (
+    // If previous pivot's v is greater than current pivot's v, and 
         pivots[i-1].v > pivots[i].v &&
+    // the previous pivot's l is less than current pivot's l, and
         pivots[i-1].l < pivots[i].l &&
-        // current pivot's low is less than previous pivot's high
+    // current pivot's low is less than previous pivot's high...
         pivots[i].l < pivots[i-1].h
-       ) {
-      stockData[ticker]["supplyTests"].push(pivots[i]);
-    }
+    ) {
+      // Build a new signal object...
+        let currentSignal = {
+          date: pivots[i].date,
+          symbol: ticker,
+          trade: "short"
+        };
+      // ...and add it to our signals array.
+        stockData.allSignals.push(currentSignal);
+      }
   }
 }
 
 
-function findDemandTests (pivots, ticker) {
-  // Init demandTests arrays if undefined.
-  stockData[ticker]["demandTests"] = stockData[ticker]["demandTests"] || [];
+function scanForDemandTests (pivots, ticker) {
+  // Init signals array if undefined.
+  stockData.allSignals = stockData.allSignals || [];
 
-  // Find supply tests.
+  // Find demand tests (short).
   for (let i = 1; i < pivots.length; i++) {
-    // if previous pivot's volume is greater than current pivot's volume, and 
-    // the previous pivot's high is greater than current pivot's high
     if (
+    // If previous pivot's v is greater than current pivot's v, and 
         pivots[i-1].v > pivots[i].v &&
+    // the previous pivot's h is greater than current pivot's h, and
         pivots[i-1].h > pivots[i].h &&
-        // current pivot's high is greater than previous pivot's low
+    // current pivot's high is greater than previous pivot's low...
         pivots[i].h > pivots[i-1].l
-       ) {
-      stockData[ticker]["demandTests"].push(pivots[i]);
+    ) {
+    // Build a new signal object...
+      let currentSignal = {
+        date: pivots[i].date,
+        symbol: ticker,
+        trade: "short"
+      };
+    // ...and add it to our signals array.
+      stockData.allSignals.push(currentSignal);
     }
   }
 }
 
 
-// Notifies user when one stock's data has finished loading into memory.
-function dataHasLoaded (ticker) {
-  let st = stockData[ticker]["supplyTests"];
-  // Show most recent supply test
-  console.log("long", ticker, st[st.length-1].date);
-  
-  let dt = stockData[ticker]["demandTests"];
-  // Show most recent supply test
-  console.log("short", ticker, dt[dt.length-1].date);
+// Searches through all loaded signals by ticker, date, or trade direction.
+  // Should be run once we've finished retrieiving all data from server.
+function searchAllSignalsAfterFetchComplete (term) {
+  // Defaults the search results to a list of all signals.
+  let searchResults;
+  if (term !== undefined) { 
+    searchResults = stockData.allSignals.filter(function(signal){
+      return signal.date === term || 
+             signal.symbol === term || 
+             signal.trade === term;
+    });
+  }
+  console.log("## Search Results:\n\n", searchResults);
 };
 
-fetchAndTransformDataForAllStocks(myTickerList);
+
+function dataHasLoaded (ticker) {
+  // Tell user this request has finished.
+  console.log("Got data for: ", "\x1b[34m", ticker, "\x1b[0m");
+};
+
+
+retrieveDataForAllStocks(myTickerList);
 // getStockData("A");
 
 /*
@@ -216,5 +245,6 @@ fetchAndTransformDataForAllStocks(myTickerList);
   
   Search all prior pivots for a stock to grab any within X percent of current pivot price.
 
-  Store supply/demand test signals in a single object for sorting; stockData.signals
+  Backburner:
+    - could combine supply and demand signal builders into one function that takes a 'trade direction' parameter.
 */
