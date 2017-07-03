@@ -8,8 +8,8 @@ module.exports = [
   "ACN",
   "ADBE",
   "ADI",
-  "ADM"
-  // "ADP",
+  "ADM",
+  "ADP"
   // "AEO",
   // "AES",
   // "AET",
@@ -20,7 +20,6 @@ module.exports = [
   // "AKRX",
   // "ALXN",
   // "AMGN",
-  // "AMLP",
   // "AMT",
   // "AMZN",
   // "APA",
@@ -183,7 +182,6 @@ module.exports = [
   // "INCY",
   // "INFN",
   // "INFO",
-  // "ING",
   // "INTC",
   // "IP",
   // "IPG",
@@ -299,7 +297,6 @@ module.exports = [
   // "RDS-B",
   // "RES",
   // "RF",
-  // "RH",
   // "RIG",
   // "RIO",
   // "ROST",
@@ -393,5 +390,8 @@ module.exports = [
   // "YELP",
   // "YUM",
   // "ZION",
-  // "ZTS"
+  // "ZTS",
+  // "AMLP",
+  // "ING",
+  // "RH"
 ];

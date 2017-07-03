@@ -21,53 +21,52 @@
   Example URLs with query:
     "https://www.alphavantage.co/query?function=HT_PHASOR&symbol=MSFT&interval=weekly&series_type=close&apikey=demo"
     "https://www.alphavantage.co/query?&symbol=MSFT&interval=weekly&apikey=demo"
+
+  Alpha Vantage requests a call frequency limit of < 200/minute.
+  A batch of ~400 calls results in 503 Service Unavailable responses.
 */
 
-let https = require("https");
+let rp = require("request-promise");
 let stockData = {};
 let myTickerList = require("./stockList.js");
+let CONFIG = require("./config.js")
 
 let getStockData = (ticker) => {
-  const CONFIG = {
-    URL : "www.alphavantage.co",
-    API_KEY : "PUT_YOUR_API_KEY_HERE"
-  }
+
+  console.log("Getting data for: ", "\x1b[34m", ticker, "\x1b[0m");
 
   let options = {
-    host: CONFIG.URL,
-    path: "/query" + "?apikey=" + CONFIG.API_KEY + "&symbol=" + ticker + "&function=TIME_SERIES_DAILY",
-    json: true
+    uri: "https://www.alphavantage.co/query",
+    json: true,
+    qs: {
+      apikey: CONFIG.API_KEY,
+      function: "TIME_SERIES_DAILY",
+      symbol: ticker
+    }
   };
-  
-  console.log("Getting data for: ", "\x1b[34m", ticker, "\x1b[0m");
-  
-  https.request(options, function(res){
-    let data = "";
 
-    res.on("data", (chunk) => {
-      return data += chunk;
-    });
-    
-    res.on("end", () => {
-      let rawDataForCurrentStock = JSON.parse(data);
+  rp(options)
+    .then((data) => {
       // Initialize a new container for this stock...
       stockData[ticker] = {};
       // Format our data and add to the container...
-      stockData[ticker]["data"] = transformData(rawDataForCurrentStock);
+      stockData[ticker]["data"] = transformData(data);
+    })
+    .then(() => {
       // Mark our pivot highs and lows...
       markPivots(stockData[ticker]["data"], ticker);
+    })
+    .then(() => {
       // Scan for supply tests...
       findSupplyTests(stockData[ticker]["pivotLows"], ticker)
       // Scan for demand tests...
       findDemandTests(stockData[ticker]["pivotHighs"], ticker)
       // Notify the user we're done for this ticker.
       dataHasLoaded(ticker);
-    });
-    
-    res.on("error", (err) => {
-      console.error("\x1b[31m%s\x1b[0m", err, "\x1b", "\n");
-    });
-  }).end();
+    })
+    .catch((err) => {
+      console.error("## Ticker:", ticker, "\n## Error:", err);
+    })
 };
 
 // Takes array of stock symbols as strings and fetches data for each.
@@ -150,6 +149,7 @@ function markPivots (daysArray, ticker) {
   }
 }
 
+
 function findSupplyTests (pivots, ticker) {
   // Init supplyTests arrays if undefined.
   stockData[ticker]["supplyTests"] = stockData[ticker]["supplyTests"] || [];
@@ -168,6 +168,7 @@ function findSupplyTests (pivots, ticker) {
     }
   }
 }
+
 
 function findDemandTests (pivots, ticker) {
   // Init demandTests arrays if undefined.
@@ -188,13 +189,9 @@ function findDemandTests (pivots, ticker) {
   }
 }
 
+
 // Notifies user when one stock's data has finished loading into memory.
 function dataHasLoaded (ticker) {
-  // Wait until we have all the data loaded for all stocks.
-  // while (Object.keys(stockData).length !== myTickerList.length) {
-
-  // }
-
   let st = stockData[ticker]["supplyTests"];
   // Show most recent supply test
   console.log("long", ticker, st[st.length-1].date);
@@ -211,10 +208,16 @@ fetchDataForAllStocks(myTickerList);
 /*
 
   TODO:
-    Promisify, so we can:
-      sort the date in different ways instead of by stock.
-      load more than 10 stocks.
-    Add percentage multiplier limit to prior pivot, so we remove false signals.
-    Search all prior pivots for a stock to grab any within X percent of current pivot price.
-    Store supply/demand test signals in a single object for sorting; stockData.signals
+  
+  Promisify helper functions, so we can:
+    - do interesting things once all of the stock data has fully loaded.
+    - sort the date in different ways instead of by stock.
+    
+  Find a better way to detect if pivot is within the range of any prior pivot. 
+    Add percentage multiplier limit?
+  
+  Search all prior pivots for a stock to grab any within X percent of current pivot price.
+
+  Store supply/demand test signals in a single object for sorting; stockData.signals
+
 */

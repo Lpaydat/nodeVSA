@@ -6,12 +6,12 @@ Retrieves stock data for a list of your tickers, cleans it, and (eventually) sca
 
 ## How to:
 
-Visit [Alpha Vantage](https://www.alphavantage.co/support/#api-key) and get an API key.
-
-Add key to `nodeVSA.js.`
-
 Run `git clone https://github.com/wnmurphy/nodeVSA.git`
 
 Run `npm install` to install dependencies.
+
+Visit [Alpha Vantage](https://www.alphavantage.co/support/#api-key) and get an API key.
+
+Create a `config.js` file with `module.exports = { API_KEY : YOUR_API_KEY};`
 
 Run `node nodeVSA`.
