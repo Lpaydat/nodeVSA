@@ -5,7 +5,7 @@
 let stockDataSample = {
   // We store an array of all signals, so we can filter by
   // A particular date, symbol, or trade direction.
-  allSignals: [
+  signals: [
     {
       date: "06-27-17",
       symbol: "GPRO",
@@ -18,32 +18,55 @@ let stockDataSample = {
     }
   ],
   // We also store the complete data per each stock.
-  GPRO : {
-    data : [
-     {
-        date : "2017-03-09",
-        h : 9.59,
-        l : 9.27,
-        c : 9.46,
-        v : 2931317,
-        pivotHigh : true,
-        pivotLow : false 
-      },
-      {
-        date : "2017-03-08",
-        h : 9.33,
-        l : 9.12,
-        c : 9.25,
-        v : 1877478,
-        pivotHigh : true,
-        pivotLow : false 
-      }
-    ],
-    pivotHighs : [],
-    pivotLows : [],
-    // These store 
-    supplyTests: [],
-    demandTests: []
+  quotes: {
+    GPRO : {
+      data : [
+       {
+          date : "2017-03-09",
+          h : 9.59,
+          l : 9.27,
+          c : 9.46,
+          v : 2931317,
+          pivotHigh : true,
+          pivotLow : false
+        },
+        {
+          date : "2017-03-08",
+          h : 9.33,
+          l : 9.12,
+          c : 9.25,
+          v : 1877478,
+          pivotHigh : true,
+          pivotLow : false
+        }
+      ],
+      pivotHighs : [],
+      pivotLows : []
+    },
+    AAPL : {
+      data : [
+       {
+          date : "2017-03-09",
+          h : 9.59,
+          l : 9.27,
+          c : 9.46,
+          v : 2931317,
+          pivotHigh : true,
+          pivotLow : false
+        },
+        {
+          date : "2017-03-08",
+          h : 9.33,
+          l : 9.12,
+          c : 9.25,
+          v : 1877478,
+          pivotHigh : true,
+          pivotLow : false
+        }
+      ],
+      pivotHighs : [],
+      pivotLows : []
+    }
   }
 };
 

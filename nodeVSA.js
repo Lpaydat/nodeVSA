@@ -16,14 +16,16 @@
 
     See http://imgur.com/SHCYUgV for a chart of these two setups.
 
-  Data source: alphavantage.co's API @ https://www.alphavantage.co/documentation/
+  Data source:
+    alphavantage.co's API @ https://www.alphavantage.co/documentation/
 
   Example URLs with query:
     "https://www.alphavantage.co/query?function=HT_PHASOR&symbol=MSFT&interval=weekly&series_type=close&apikey=demo"
     "https://www.alphavantage.co/query?&symbol=MSFT&interval=weekly&apikey=demo"
 
-  Alpha Vantage requests a call frequency limit of < 200/minute.
-  A batch of ~400 calls results in 503 Service Unavailable responses.
+  Notes:
+    Alpha Vantage requests a call frequency limit of < 200/minute.
+    A batch of ~400 calls results in 503 Service Unavailable responses.
 */
 
 let rp = require("request-promise");
@@ -34,7 +36,6 @@ let stockData = {};
 
 // Retrieves data for one stock ticker.
 let getStockData = (ticker) => {
-
   console.log("Getting data for: ", "\x1b[34m", ticker, "\x1b[0m");
 
   rp({
@@ -49,20 +50,22 @@ let getStockData = (ticker) => {
   })
     // Add our transformed data to a container in storage...
     .then((data) => {
+      // Initialize quote container if this is the first run...
+      stockData.quotes = stockData.quotes || {};
       // Initialize a new container for this stock...
-      stockData[ticker] = {};
-      stockData[ticker]["data"] = data;
+      stockData.quotes[ticker] = {};
+      stockData.quotes[ticker]["data"] = data;
 
     })
     // Mark pivot highs and lows in data...
     .then(() => {
-      markAllPivots(stockData[ticker]["data"], ticker);
+      markAllPivots(stockData.quotes[ticker]["data"], ticker);
     })
     .then(() => {
       // Scan for supply tests...
-      scanForSupplyTests(stockData[ticker]["pivotLows"], ticker);
+      scanForSupplyTests(stockData.quotes[ticker]["pivotLows"], ticker);
       // Scan for demand tests...
-      scanForDemandTests(stockData[ticker]["pivotHighs"], ticker);
+      scanForDemandTests(stockData.quotes[ticker]["pivotHighs"], ticker);
       // Notify the user we're done for this ticker.
       dataHasLoaded(ticker);
     })
@@ -106,15 +109,15 @@ function transformData (stock) {
 // Identifies pivot highs and lows, and set pivot flags on that day.
 function markAllPivots (daysArray, ticker) {
   // Init pivotHighs and pivotLows arrays if undefined.
-  stockData[ticker]["pivotHighs"] = stockData[ticker]["pivotHighs"] || [];
-  stockData[ticker]["pivotLows"] = stockData[ticker]["pivotLows"] || [];
+  stockData.quotes[ticker]["pivotHighs"] = stockData.quotes[ticker]["pivotHighs"] || [];
+  stockData.quotes[ticker]["pivotLows"] = stockData.quotes[ticker]["pivotLows"] || [];
 
   // Mark pivot Highs
   for (let i = 1; i < daysArray.length; i++) {
     if (daysArray[i+1] === undefined) { // handle most recent day
       if (daysArray[i].h > daysArray[i-1].h) {
         daysArray[i].pivotHigh = true;
-        stockData[ticker]["pivotHighs"].push(daysArray[i]);
+        stockData.quotes[ticker]["pivotHighs"].push(daysArray[i]);
       }
     } else {
       if (
@@ -125,7 +128,7 @@ function markAllPivots (daysArray, ticker) {
       ) {
         // Then today is a pivot high.
         daysArray[i].pivotHigh = true;
-        stockData[ticker]["pivotHighs"].push(daysArray[i]);
+        stockData.quotes[ticker]["pivotHighs"].push(daysArray[i]);
       }
     }
   }
@@ -134,7 +137,7 @@ function markAllPivots (daysArray, ticker) {
     if (daysArray[i+1] === undefined) { // handle most recent day
       if (daysArray[i].l < daysArray[i-1].l) {
         daysArray[i].pivotLow = true;
-        stockData[ticker]["pivotLows"].push(daysArray[i]);
+        stockData.quotes[ticker]["pivotLows"].push(daysArray[i]);
       }
     } else {
       if (
@@ -144,7 +147,7 @@ function markAllPivots (daysArray, ticker) {
         daysArray[i].l < daysArray[i+1].l
       ) { // Then today is a pivot low.
         daysArray[i].pivotLow = true;
-        stockData[ticker]["pivotLows"].push(daysArray[i]);
+        stockData.quotes[ticker]["pivotLows"].push(daysArray[i]);
       }
     }
   }
@@ -153,7 +156,7 @@ function markAllPivots (daysArray, ticker) {
 
 function scanForSupplyTests (pivots, ticker) {
   // Init signals array if undefined.
-  stockData.allSignals = stockData.allSignals || [];
+  stockData.signals = stockData.signals || [];
 
   // Find supply tests (long).
   for (let i = 1; i < pivots.length; i++) {
@@ -169,12 +172,12 @@ function scanForSupplyTests (pivots, ticker) {
     ) {
       // Build a new signal object...
         let currentSignal = {
-          date: pivots[i].date,
+          date: pivots[i].date.split(' ')[0], // Removes the random timestamp.
           symbol: ticker,
-          trade: "short"
+          trade: "long"
         };
       // ...and add it to our signals array.
-        stockData.allSignals.push(currentSignal);
+        stockData.signals.push(currentSignal);
       }
   }
 }
@@ -182,7 +185,7 @@ function scanForSupplyTests (pivots, ticker) {
 
 function scanForDemandTests (pivots, ticker) {
   // Init signals array if undefined.
-  stockData.allSignals = stockData.allSignals || [];
+  stockData.signals = stockData.signals || [];
 
   // Find demand tests (short).
   for (let i = 1; i < pivots.length; i++) {
@@ -196,12 +199,12 @@ function scanForDemandTests (pivots, ticker) {
     ) {
     // Build a new signal object...
       let currentSignal = {
-        date: pivots[i].date,
+        date: pivots[i].date.split(' ')[0], // Removes the random timestamp.
         symbol: ticker,
         trade: "short"
       };
     // ...and add it to our signals array.
-      stockData.allSignals.push(currentSignal);
+      stockData.signals.push(currentSignal);
     }
   }
 }
@@ -209,14 +212,12 @@ function scanForDemandTests (pivots, ticker) {
 
 // Searches through all loaded signals by ticker, date, or trade direction.
   // Should be run once we've finished retrieiving all data from server.
-function searchAllSignalsAfterFetchComplete (term) {
+function searchsignalsAfterFetchComplete (filter) {
   // Defaults the search results to a list of all signals.
   let searchResults;
-  if (term !== undefined) { 
-    searchResults = stockData.allSignals.filter(function(signal){
-      return signal.date === term || 
-             signal.symbol === term || 
-             signal.trade === term;
+  if (filter !== undefined) {
+    searchResults = stockData.signals.filter(function(signal){
+      return eval(filter);
     });
   }
   console.log("## Search Results:\n\n", searchResults);
@@ -226,24 +227,47 @@ function searchAllSignalsAfterFetchComplete (term) {
 function dataHasLoaded (ticker) {
   // Tell user this request has finished.
   console.log("Got data for: ", "\x1b[34m", ticker, "\x1b[0m");
+
+  let filter = "signal.date === '2017-07-03' && signal.trade === 'long'";
+  console.log(searchsignalsAfterFetchComplete(filter));
 };
 
 
 retrieveDataForAllStocks(myTickerList);
-// getStockData("A");
+
 
 /*
 
   TODO:
   
-  Promisify helper functions, so we can:
+  1. Promisify helper functions, so we can:
     - do interesting things once all of the stock data has fully loaded.
     - sort the date in different ways instead of by stock.
   
-  Find a better way to detect if pivot is within the range of any prior pivot. 
+  2. Find a better way to detect if pivot is within the range of any prior pivot.
     Add percentage multiplier limit?
-  
-  Search all prior pivots for a stock to grab any within X percent of current pivot price.
+    Search all prior pivots for a stock to grab any within X percent of current pivot price?
+
+    Goal: Calculate "closeness".
+    For each pivot, calculate 5% of the day's range for this pivot.
+    Calculate "closeness range" by adding and subtracting this from the pivot high (if pivotHigh) or low (if pivotLow).
+    To determine signal:
+      - look back at all prior pivots for this stock,
+      - Check if any are "close" to the current pivot high/low
+      (filter all prior pivotLows for low within "closeness" range)
+      (filter all prior pivotHighs for high within "closeness" range)
+      - Add to stockData.signals if there is at least one pivot in the last 4 months "close" to this pivot.
+
+    Hypothesis: higher volume on any pivot at the same level is significant, not just for most recent.
+      For each stock, for each pivot, look at all prior pivots for the stock.
+
+  3. Create a GUI so user can:
+    - Update data for all stocks.
+    - Update data for stock (ticker)
+    - Search signals by date/symbol/trade direction (search term).
+    - See all signals.
+    - See all data for one stock (ticker).
+    - Quit.
 
   Backburner:
     - could combine supply and demand signal builders into one function that takes a 'trade direction' parameter.
