@@ -35,22 +35,23 @@ let getStockData = (ticker) => {
 
   console.log("Getting data for: ", "\x1b[34m", ticker, "\x1b[0m");
 
-  let options = {
+  rp({
     uri: "https://www.alphavantage.co/query",
     json: true,
     qs: {
       apikey: CONFIG.API_KEY,
       function: "TIME_SERIES_DAILY",
       symbol: ticker
-    }
-  };
-
-  rp(options)
+    },
+    transform: transformData
+  })
     .then((data) => {
       // Initialize a new container for this stock...
       stockData[ticker] = {};
       // Format our data and add to the container...
-      stockData[ticker]["data"] = transformData(data);
+      // stockData[ticker]["data"] = transformData(data);
+      stockData[ticker]["data"] = data;
+
     })
     .then(() => {
       // Mark our pivot highs and lows...
@@ -71,14 +72,18 @@ let getStockData = (ticker) => {
 
 
 // Takes array of stock symbols as strings and fetches data for each.
+// Adds rate-limiting per data source's request.
+// ~200 requests per minute; let's call it 195.
+// (60,000 ms/minute)/195 requests = 307ms per request.
 function fetchAndTransformDataForAllStocks(arrayOfStockTickers) {
   for (let i = 0; i < arrayOfStockTickers.length; i++) {
-    getStockData(arrayOfStockTickers[i]);
+    setTimeout(getStockData.bind(null, arrayOfStockTickers[i]), i*307);
   }
 };
 
 
 // Takes a parsed JSON object, and transforms it.
+// (Passed as the 'transform' option to request-promise.)
 function transformData (stock) {
   let transformed = [];
   let timeSeries = stock["Time Series (Daily)"];
@@ -91,8 +96,7 @@ function transformData (stock) {
     dayOfData.v = parseFloat(timeSeries[date]["5. volume"]);
     dayOfData.pivotHigh = false;
     dayOfData.pivotLow = false;
-    transformed.push(dayOfData);
-  }
+    transformed.push(dayOfData); }
   // Reverse array, so most recent day is at last index.
   return transformed.reverse();
 }
@@ -197,8 +201,7 @@ function dataHasLoaded (ticker) {
 };
 
 fetchAndTransformDataForAllStocks(myTickerList);
-
-
+// getStockData("A");
 
 /*
 
@@ -207,16 +210,11 @@ fetchAndTransformDataForAllStocks(myTickerList);
   Promisify helper functions, so we can:
     - do interesting things once all of the stock data has fully loaded.
     - sort the date in different ways instead of by stock.
-
-  Add rate-limiting.
-    ~200 requests per minute; let's call it 195.
-    (60,000 ms/minute)/195 requests = 307ms per request.
-    
+  
   Find a better way to detect if pivot is within the range of any prior pivot. 
     Add percentage multiplier limit?
   
   Search all prior pivots for a stock to grab any within X percent of current pivot price.
 
   Store supply/demand test signals in a single object for sorting; stockData.signals
-
 */
