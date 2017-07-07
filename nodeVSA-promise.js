@@ -75,23 +75,6 @@ let getDataForStock = (ticker) => new Promise((resolve, reject) => {
 }); 
     
 
-// Fetches data for an array of stock symbols as strings.
-  // Adds rate-limiting per data source's request.
-    // ~200 requests per minute; let's call it 195.
-    // (60,000 ms/minute)/195 requests = 307ms per request.
-let getDataForAllStocks = (arrayOfStockTickers) => new ThrottledPromise((resolve, reject)=>{
-  let tickers = arrayOfStockTickers;
-  let currentTicker = 0;
-  while (tickers.length) {
-    setTimeout(getDataForStock.bind(null, tickers.shift()), currentTicker*307);
-  }
-
-  if (tickers.length === 0) {
-    resolve("Ticker requests completed.");
-  } else {
-    reject("Ticker requests not completed.");
-  }
-});
 
 
 
@@ -113,38 +96,40 @@ function createThrottle(series = 10, timeout = 1000) {
   };
 }
 
-// Create throttle function
-var throttle = createThrottle(3, 1e3); // 3 requests every 1 second
 
-// Create an array containing a promise for each ticker request.
-let promisifiedTickerArray = TICKER_LIST.map(
-  (ticker) => throttle().then(() => (
-    getDataForStock(ticker)
+function start () {
+
+  // Adds rate-limiting per data source's request; ~200 requests per minute
+  var throttle = createThrottle(3, 1e3); // 3 requests every 1 second
+  
+  // Create an array containing a promise for each ticker request.
+  let promisifiedTickerArray = TICKER_LIST.map(
+    (ticker) => throttle().then(() => (
+      getDataForStock(ticker)
+      )
     )
-  )
-);
-
-// get all stock data
-  // creates a new promise for each ticker 
-    // (resolves once these have been fired)
-    // (should be once they've each resolved)
-    // requests data
-    // transforms data
-    // marks pivots
-    // scans for signals
-// search by filter 
-
-Promise.all(promisifiedTickerArray)
-.then(()=>{
-  console.log("\x1b[31m", "All ticker data retrieved.", "\x1b[0m", "\n");
-})
-.then(()=>{
-  // return searchAllSignalsAfterFetchComplete(searchFilter);
-})
-.catch((err)=>{
-  console.error(err);
-});
-
+  );
+  
+  // Main logic.
+  Promise.all(promisifiedTickerArray)
+  .then(()=>{
+    console.log("\n" + "\x1b[31m" + "## All ticker data retrieved." + "\x1b[0m" + "\n");
+  })
+  .then(()=>{
+    // If user passes in a search string at command line, use it.
+    if (process.argv[2]) {
+      let searchFilter = process.argv[2];
+      return searchAllSignalsAfterFetchComplete(searchFilter);
+    } else {
+    // Otherwise show all signals.
+      console.log(stockData.allSignals);
+    }
+  })
+  .catch((err)=>{
+    console.error(err);
+  });
+}
+start();
 
 
 // Takes a parsed JSON object, and transforms it.
@@ -273,16 +258,16 @@ function scanForDemandTests (pivots, ticker) {
 
 // Searches through all loaded signals by ticker, date, or trade direction.
   // Should be run once we've finished retrieiving all data from server.
+  // Example search filters:
+  // "signal.date === '2017-07-07'"
+  // "signal.symbol === 'AAPL' && signal.trade === 'long'"
 function searchAllSignalsAfterFetchComplete (filter) {
   // Defaults the search results to a list of all signals.
   let searchResults;
   if (filter !== undefined) { 
     searchResults = stockData.allSignals.filter(function(signal){
-      // return signal.date === term || 
-      //        signal.symbol === term || 
-      //        signal.trade === term;
       return eval(filter);
     });
   }
-  console.log("## Search Results:\n\n", searchResults);
+  console.log("\n" + "\x1b[31m" + "## Search Results:" + "\x1b[0m" + "\n", searchResults);
 };
