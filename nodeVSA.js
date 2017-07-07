@@ -28,17 +28,58 @@
     A batch of ~400 calls results in 503 Service Unavailable responses.
 */
 
-const RP = require("request-promise");
 const TICKER_LIST = require("./stockList.js");
+const RP = require("request-promise");
 const CONFIG = require("./config.js")
+
+let transformData = require("./transformData.js");
+let createThrottle = require("./createThrottle.js");
+let searchAllSignals = require("./searchAllSignals.js");
+
 let stockData = {
   quotes: [],
   signals: {}
 };
 
 
+
+function start () {
+  // Adds rate-limiting per data source's request; ~200 requests per minute
+  var throttle = createThrottle(3, 1e3); // 3 requests every 1 second
+  
+  // Create an array containing a promise for each ticker request.
+  let promisifiedTickerArray = TICKER_LIST.map(
+    (ticker) => throttle().then(() => (
+      fetchDataForOneStock(ticker)
+      )
+    )
+  );
+  
+  // Main logic.
+  Promise.all(promisifiedTickerArray)
+  .then(()=>{
+    console.log("\n" + "\x1b[31m" + "## All ticker data retrieved." + "\x1b[0m" + "\n");
+  })
+  .then(()=>{
+    // If user passes in a search string at command line, use it.
+    if (process.argv[2]) {
+      let searchFilter = process.argv[2];
+      return searchAllSignals(searchFilter);
+    } else {
+    // Otherwise show all signals.
+      console.log(stockData.allSignals);
+    }
+  })
+  .catch((err)=>{
+    console.error(err);
+  });
+}
+start();
+
+
+
 // Requests data for one stock ticker with a promise.
-let getDataForStock = (ticker) => new Promise((resolve, reject) => {
+let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
 
   console.log("Getting data for: ", "\x1b[34m", ticker, "\x1b[0m");
   RP({
@@ -69,90 +110,13 @@ let getDataForStock = (ticker) => new Promise((resolve, reject) => {
     resolve();
   })
   .catch((err) => {
-    console.error("## Ticker:", ticker, "\n## Error:", err);
+    console.error("\n" + "\x1b[31m" + "## Ticker: " + ticker + "\n", "## Error: " + "\x1b[0m" + "\n" + err);
     reject(err);
   })
 }); 
-    
 
 
 
-
-// Promise throttler (courtesy Pasha Rumkin)
-// https://stackoverflow.com/questions/38048829/node-js-api-request-limit-with-request-promise
-function createThrottle(series = 10, timeout = 1000) {
-  var seriesCounter = 0;
-  var delay = 0;
-
-  return () => {
-    return new Promise((resolve) => {
-      if (--seriesCounter <= 0) {
-        delay += timeout;
-        seriesCounter = series;
-      }
-
-      setTimeout(resolve, delay);
-    });
-  };
-}
-
-
-function start () {
-
-  // Adds rate-limiting per data source's request; ~200 requests per minute
-  var throttle = createThrottle(3, 1e3); // 3 requests every 1 second
-  
-  // Create an array containing a promise for each ticker request.
-  let promisifiedTickerArray = TICKER_LIST.map(
-    (ticker) => throttle().then(() => (
-      getDataForStock(ticker)
-      )
-    )
-  );
-  
-  // Main logic.
-  Promise.all(promisifiedTickerArray)
-  .then(()=>{
-    console.log("\n" + "\x1b[31m" + "## All ticker data retrieved." + "\x1b[0m" + "\n");
-  })
-  .then(()=>{
-    // If user passes in a search string at command line, use it.
-    if (process.argv[2]) {
-      let searchFilter = process.argv[2];
-      return searchAllSignalsAfterFetchComplete(searchFilter);
-    } else {
-    // Otherwise show all signals.
-      console.log(stockData.allSignals);
-    }
-  })
-  .catch((err)=>{
-    console.error(err);
-  });
-}
-start();
-
-
-// Takes a parsed JSON object, and transforms it.
-  // (Passed as the 'transform' option to request-promise.)
-function transformData (stock) {
-  let transformed = [];
-  let timeSeries = stock["Time Series (Daily)"];
-  for (let date in timeSeries) {
-    let dayOfData = {};
-    dayOfData.date = date;
-    dayOfData.h = parseFloat(timeSeries[date]["2. high"]);
-    dayOfData.l = parseFloat(timeSeries[date]["3. low"]);
-    dayOfData.c = parseFloat(timeSeries[date]["4. close"]);
-    dayOfData.v = parseFloat(timeSeries[date]["5. volume"]);
-    dayOfData.pivotHigh = false;
-    dayOfData.pivotLow = false;
-    transformed.push(dayOfData); }
-  // Reverse array, so most recent day is at last index.
-  return transformed.reverse();
-}
-
-
-// Identifies pivot highs and lows, and set pivot flags on that day.
 function markAllPivots (daysArray, ticker) {
   // Init pivotHighs and pivotLows arrays if undefined.
   stockData.quotes[ticker]["pivotHighs"] = stockData.quotes[ticker]["pivotHighs"] || [];
@@ -200,6 +164,7 @@ function markAllPivots (daysArray, ticker) {
 }
 
 
+
 function scanForSupplyTests (pivots, ticker) {
   // Init signals array if undefined.
   stockData.allSignals = stockData.allSignals || [];
@@ -229,6 +194,7 @@ function scanForSupplyTests (pivots, ticker) {
 }
 
 
+
 function scanForDemandTests (pivots, ticker) {
   // Init signals array if undefined.
   stockData.allSignals = stockData.allSignals || [];
@@ -254,20 +220,3 @@ function scanForDemandTests (pivots, ticker) {
     }
   }
 }
-
-
-// Searches through all loaded signals by ticker, date, or trade direction.
-  // Should be run once we've finished retrieiving all data from server.
-  // Example search filters:
-  // "signal.date === '2017-07-07'"
-  // "signal.symbol === 'AAPL' && signal.trade === 'long'"
-function searchAllSignalsAfterFetchComplete (filter) {
-  // Defaults the search results to a list of all signals.
-  let searchResults;
-  if (filter !== undefined) { 
-    searchResults = stockData.allSignals.filter(function(signal){
-      return eval(filter);
-    });
-  }
-  console.log("\n" + "\x1b[31m" + "## Search Results:" + "\x1b[0m" + "\n", searchResults);
-};
