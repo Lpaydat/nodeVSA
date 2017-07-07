@@ -2,7 +2,8 @@
 
 None of my stock trading software does exactly what I want it to, so I figured I'd just build a tool.
 
-Retrieves stock data for a list of your tickers, cleans it, and (eventually) scans for supply and demand tests, which are a pretty decent trading signal.
+Retrieves stock data for a list of your tickers, cleans and transforms data, and scans for supply and demand tests.
+
 
 ## How to:
 
