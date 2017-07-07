@@ -16,29 +16,32 @@
 
     See http://imgur.com/SHCYUgV for a chart of these two setups.
 
-  Data source:
+  Data source: 
     alphavantage.co's API @ https://www.alphavantage.co/documentation/
 
   Example URLs with query:
     "https://www.alphavantage.co/query?function=HT_PHASOR&symbol=MSFT&interval=weekly&series_type=close&apikey=demo"
     "https://www.alphavantage.co/query?&symbol=MSFT&interval=weekly&apikey=demo"
-
+  
   Notes:
     Alpha Vantage requests a call frequency limit of < 200/minute.
     A batch of ~400 calls results in 503 Service Unavailable responses.
 */
 
-let rp = require("request-promise");
-let myTickerList = require("./stockList.js");
-let CONFIG = require("./config.js")
-let stockData = {};
+const RP = require("request-promise");
+const TICKER_LIST = require("./stockList.js");
+const CONFIG = require("./config.js")
+let stockData = {
+  quotes: [],
+  signals: {}
+};
 
 
-// Retrieves data for one stock ticker.
-let getStockData = (ticker) => {
+// Requests data for one stock ticker with a promise.
+let getDataForStock = (ticker) => new Promise((resolve, reject) => {
+
   console.log("Getting data for: ", "\x1b[34m", ticker, "\x1b[0m");
-
-  rp({
+  RP({
     uri: "https://www.alphavantage.co/query",
     json: true,
     qs: {
@@ -48,42 +51,100 @@ let getStockData = (ticker) => {
     },
     transform: transformData
   })
-    // Add our transformed data to a container in storage...
-    .then((data) => {
-      // Initialize quote container if this is the first run...
-      stockData.quotes = stockData.quotes || {};
-      // Initialize a new container for this stock...
-      stockData.quotes[ticker] = {};
-      stockData.quotes[ticker]["days"] = data;
-
-    })
-    // Mark pivot highs and lows in data...
-    .then(() => {
-      markAllPivots(stockData.quotes[ticker]["days"], ticker);
-    })
-    .then(() => {
-      // Scan for supply tests...
-      scanForSupplyTests(stockData.quotes[ticker]["pivotLows"], ticker);
-      // Scan for demand tests...
-      scanForDemandTests(stockData.quotes[ticker]["pivotHighs"], ticker);
-      // Notify the user we're done for this ticker.
-      dataHasLoaded(ticker);
-    })
-    .catch((err) => {
-      console.error("## Ticker:", ticker, "\n## Error:", err);
-    })
-};
-
+  // Add our transformed data to a container in storage.
+  .then((data) => {
+    // Initialize a new container for this stock.
+    stockData.quotes[ticker] = {};
+    stockData.quotes[ticker]["data"] = data;
+  })
+  // Mark pivots.
+  .then(() => {
+    markAllPivots(stockData.quotes[ticker]["data"], ticker);
+  })
+  .then(() => {
+    // Scan for tests.
+    scanForSupplyTests(stockData.quotes[ticker]["pivotLows"], ticker);
+    scanForDemandTests(stockData.quotes[ticker]["pivotHighs"], ticker);
+    console.log("Got data for: ", "\x1b[34m", ticker, "\x1b[0m");
+    resolve();
+  })
+  .catch((err) => {
+    console.error("## Ticker:", ticker, "\n## Error:", err);
+    reject(err);
+  })
+}); 
+    
 
 // Fetches data for an array of stock symbols as strings.
   // Adds rate-limiting per data source's request.
     // ~200 requests per minute; let's call it 195.
     // (60,000 ms/minute)/195 requests = 307ms per request.
-function retrieveDataForAllStocks(arrayOfStockTickers) {
-  for (let i = 0; i < arrayOfStockTickers.length; i++) {
-    setTimeout(getStockData.bind(null, arrayOfStockTickers[i]), i*307);
+let getDataForAllStocks = (arrayOfStockTickers) => new ThrottledPromise((resolve, reject)=>{
+  let tickers = arrayOfStockTickers;
+  let currentTicker = 0;
+  while (tickers.length) {
+    setTimeout(getDataForStock.bind(null, tickers.shift()), currentTicker*307);
   }
-};
+
+  if (tickers.length === 0) {
+    resolve("Ticker requests completed.");
+  } else {
+    reject("Ticker requests not completed.");
+  }
+});
+
+
+
+// Promise throttler (courtesy Pasha Rumkin)
+// https://stackoverflow.com/questions/38048829/node-js-api-request-limit-with-request-promise
+function createThrottle(series = 10, timeout = 1000) {
+  var seriesCounter = 0;
+  var delay = 0;
+
+  return () => {
+    return new Promise((resolve) => {
+      if (--seriesCounter <= 0) {
+        delay += timeout;
+        seriesCounter = series;
+      }
+
+      setTimeout(resolve, delay);
+    });
+  };
+}
+
+// Create throttle function
+var throttle = createThrottle(3, 1e3); // 3 requests every 1 second
+
+// Create an array containing a promise for each ticker request.
+let promisifiedTickerArray = TICKER_LIST.map(
+  (ticker) => throttle().then(() => (
+    getDataForStock(ticker)
+    )
+  )
+);
+
+// get all stock data
+  // creates a new promise for each ticker 
+    // (resolves once these have been fired)
+    // (should be once they've each resolved)
+    // requests data
+    // transforms data
+    // marks pivots
+    // scans for signals
+// search by filter 
+
+Promise.all(promisifiedTickerArray)
+.then(()=>{
+  console.log("\x1b[31m", "All ticker data retrieved.", "\x1b[0m", "\n");
+})
+.then(()=>{
+  // return searchAllSignalsAfterFetchComplete(searchFilter);
+})
+.catch((err)=>{
+  console.error(err);
+});
+
 
 
 // Takes a parsed JSON object, and transforms it.
@@ -156,7 +217,7 @@ function markAllPivots (daysArray, ticker) {
 
 function scanForSupplyTests (pivots, ticker) {
   // Init signals array if undefined.
-  stockData.signals = stockData.signals || [];
+  stockData.allSignals = stockData.allSignals || [];
 
   // Find supply tests (long).
   for (let i = 1; i < pivots.length; i++) {
@@ -177,7 +238,7 @@ function scanForSupplyTests (pivots, ticker) {
           trade: "long"
         };
       // ...and add it to our signals array.
-        stockData.signals.push(currentSignal);
+        stockData.allSignals.push(currentSignal);
       }
   }
 }
@@ -185,7 +246,7 @@ function scanForSupplyTests (pivots, ticker) {
 
 function scanForDemandTests (pivots, ticker) {
   // Init signals array if undefined.
-  stockData.signals = stockData.signals || [];
+  stockData.allSignals = stockData.allSignals || [];
 
   // Find demand tests (short).
   for (let i = 1; i < pivots.length; i++) {
@@ -204,7 +265,7 @@ function scanForDemandTests (pivots, ticker) {
         trade: "short"
       };
     // ...and add it to our signals array.
-      stockData.signals.push(currentSignal);
+      stockData.allSignals.push(currentSignal);
     }
   }
 }
@@ -212,67 +273,16 @@ function scanForDemandTests (pivots, ticker) {
 
 // Searches through all loaded signals by ticker, date, or trade direction.
   // Should be run once we've finished retrieiving all data from server.
-function searchsignalsAfterFetchComplete (filter) {
+function searchAllSignalsAfterFetchComplete (filter) {
   // Defaults the search results to a list of all signals.
   let searchResults;
-  if (filter !== undefined) {
-    searchResults = stockData.signals.filter(function(signal){
+  if (filter !== undefined) { 
+    searchResults = stockData.allSignals.filter(function(signal){
+      // return signal.date === term || 
+      //        signal.symbol === term || 
+      //        signal.trade === term;
       return eval(filter);
     });
-  } else {
-    searchResults = stockData.signals;
   }
   console.log("## Search Results:\n\n", searchResults);
 };
-
-
-// Tells user this request has finished.
-function dataHasLoaded (ticker) {
-  console.log("Got data for: ", "\x1b[34m", ticker, "\x1b[0m");
-
-  let filter = "signal.trade === 'long' && signal.date === '2017-07-05'";
-  console.log(searchsignalsAfterFetchComplete(filter));
-  // console.log(stockData);
-  debugger;
-};
-
-
-retrieveDataForAllStocks(myTickerList);
-
-
-/*
-
-  TODO:
-  
-  1. Promisify helper functions, so we can:
-    - do interesting things once all of the stock data has fully loaded.
-    - sort the date in different ways instead of by stock.
-  
-  2. Find a better way to detect if pivot is within the range of any prior pivot.
-    Add percentage multiplier limit?
-    Search all prior pivots for a stock to grab any within X percent of current pivot price?
-
-    Goal: Calculate "closeness".
-    For each pivot, calculate 5% of the day's range for this pivot.
-    Calculate "closeness range" by adding and subtracting this from the pivot high (if pivotHigh) or low (if pivotLow).
-    To determine signal:
-      - look back at all prior pivots for this stock,
-      - Check if any are "close" to the current pivot high/low
-      (filter all prior pivotLows for low within "closeness" range)
-      (filter all prior pivotHighs for high within "closeness" range)
-      - Add to stockData.signals if there is at least one pivot in the last 4 months "close" to this pivot.
-
-    Hypothesis: higher volume on any pivot at the same level is significant, not just for most recent.
-      For each stock, for each pivot, look at all prior pivots for the stock.
-
-  3. Create a GUI so user can:
-    - Update data for all stocks.
-    - Update data for stock (ticker)
-    - Search signals by date/symbol/trade direction (search term).
-    - See all signals.
-    - See all data for one stock (ticker).
-    - Quit.
-
-  Backburner:
-    - could combine supply and demand signal builders into one function that takes a 'trade direction' parameter.
-*/

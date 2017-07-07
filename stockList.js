@@ -388,10 +388,10 @@ module.exports = [
   "YELP",
   "YUM",
   "ZION",
-  "ZTS",
-  "AMLP", // For some reason, these tickers consistently error
-  "ING",
-  "RH",
-  "VIA-B",
-  "XLP"
+  "ZTS"
+  // "AMLP", // For some reason, these tickers consistently error
+  // "ING",
+  // "RH",
+  // "VIA-B",
+  // "XLP"
 ];
