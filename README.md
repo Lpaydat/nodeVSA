@@ -15,4 +15,6 @@ Visit [Alpha Vantage](https://www.alphavantage.co/support/#api-key) and get an A
 
 Create a `config.js` file with `module.exports = { API_KEY : YOUR_API_KEY};`
 
+Add your own stock tickers to `stockList.js`.
+
 Run `node nodeVSA`.
