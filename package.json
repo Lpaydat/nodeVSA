@@ -4,7 +4,8 @@
   "description": "Downloads stock data to search for supply/demand tests.",
   "main": "nodeVSA.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node nodeVSA",
+    "today": "node nodeVSA \"'signal.date === ' + (new Date()).toISOString().slice(0,10)\""
   },
   "author": "Neil Murphy",
   "license": "ISC",

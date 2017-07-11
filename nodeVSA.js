@@ -38,6 +38,7 @@ let searchAllSignals = require("./searchAllSignals.js");
 
 
 function start () {
+
   // Adds rate-limiting per data source's request; ~200 requests per minute
   var throttle = createThrottle(3, 1e3); // 3 requests every 1 second
   
@@ -61,6 +62,7 @@ function start () {
       return searchAllSignals(searchFilter);
     } else {
     // Otherwise show all signals.
+      console.log("\n" + "\x1b[31m" + "## No search filter provided." + "\x1b[0m" + "\n");
       console.log(stockData.allSignals);
     }
   })
