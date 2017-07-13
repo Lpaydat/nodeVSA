@@ -1,10 +1,33 @@
 /*
   Illustrates the structure of the data.
+
+  stockData.signals
+    Array of signal objects for filtering results.
+  stockData.quotes[ticker].data
+    Array of trading day data.
+  stockData.quotes[ticker].data[i].date
+    Date
+  stockData.quotes[ticker].data[i].h
+    Daily High
+  stockData.quotes[ticker].data[i].l
+    Daily Low
+  stockData.quotes[ticker].data[i].c
+    Closing price
+  stockData.quotes[ticker].data[i].v
+    Volume
+  stockData.quotes[ticker].data[i].pivotHigh
+    Boolean
+  stockData.quotes[ticker].data[i].pivotLow
+    Boolean
+  stockData.quotes[ticker].data[i].hits
+    Array of prior trading days where the pivot low/high is within range of this day's pivot.
+  stockData.quotes[ticker].data[i].hitsCount
+    Strength of support/resistance at this day's pivot range.
 */
 
-let stockDataSample = {
-  // We store an array of all signals, so we can filter by
-  // A particular date, symbol, or trade direction.
+
+
+let stockData = {
   signals: [
     {
       date: "06-27-17",
