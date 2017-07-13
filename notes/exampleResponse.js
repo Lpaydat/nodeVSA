@@ -9,11 +9,15 @@ let stockDataSample = {
     {
       date: "06-27-17",
       symbol: "GPRO",
+      hitsCount: 5,
+      hits: [{}, {}, {}],
       direction: "long"
     },
     {
       date: "06-25-17",
       symbol: "AAPL",
+      hitsCount: 5,
+      hits: [{}, {}, {}],
       direction: "short"
     }
   ],
@@ -28,7 +32,9 @@ let stockDataSample = {
           c : 9.46,
           v : 2931317,
           pivotHigh : true,
-          pivotLow : false
+          pivotLow : false,
+          hits: [],
+          hitsCount: 0
         },
         {
           date : "2017-03-08",
@@ -37,10 +43,24 @@ let stockDataSample = {
           c : 9.25,
           v : 1877478,
           pivotHigh : true,
-          pivotLow : false
+          pivotLow : false,
+          hits: [{}, {}, {}],
+          hitsCount: 3
         }
       ],
-      pivotHighs : [],
+      pivotHighs : [
+        {
+          date : "2017-03-08",
+          h : 9.33,
+          l : 9.12,
+          c : 9.25,
+          v : 1877478,
+          pivotHigh : true,
+          pivotLow : false,
+          hits: [{}],
+          hitsCount: 1
+        }
+      ],
       pivotLows : []
     },
     AAPL : {

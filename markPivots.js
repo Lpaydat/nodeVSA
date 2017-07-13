@@ -1,4 +1,5 @@
 let stockData = require("./stockData.js");
+let calculateSupportOrResistance = require("./calculateSupportOrResistance.js");
 
 function markPivots (daysArray, ticker) {
   // Init pivotHighs and pivotLows arrays if undefined.
@@ -44,6 +45,9 @@ function markPivots (daysArray, ticker) {
       }
     }
   }
+  // Calculate prior support/resistance.
+  calculateSupportOrResistance(ticker, "support", stockData.quotes[ticker]["pivotLows"]);
+  calculateSupportOrResistance(ticker, "resistance", stockData.quotes[ticker]["pivotHighs"]);
 }
 
 module.exports = markPivots;

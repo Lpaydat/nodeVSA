@@ -32,7 +32,6 @@ const TICKER_LIST = require("./stockList.js");
 
 let stockData = require("./stockData.js");
 let fetchDataForOneStock = require("./fetchDataForOneStock.js");
-
 let createThrottle = require("./createThrottle.js");
 let searchAllSignals = require("./searchAllSignals.js");
 
