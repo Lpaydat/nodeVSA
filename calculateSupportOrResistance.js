@@ -12,9 +12,6 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
     return console.error("Must specify 'support' or 'resistance'.");
   }
 
-  console.log("supportOrResistance", supportOrResistance);
-  console.log("pivot", pivot);
-
   // For each day of pivot data i in stockData.quotes[ticker][pivotArr]
   for (let i = 0; i < pivotsArr.length; i++) {
     
@@ -40,10 +37,11 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
         pivotsArr[i].hitsCount = pivotsArr[i].hits.length;
       }
     }
-    
-    console.log("\n\n\n## current pivot day: " + pivotsArr[i].date);
-    console.log("\n## range from: " + range[0] + " to " + range[1] + ".");
-    console.log("\n## pivotsArr[i].hits", pivotsArr[i].hits);
+
+    // # Debugging    
+    // console.log("\n\n\n## current pivot day: " + pivotsArr[i].date);
+    // console.log("\n## range from: " + range[0] + " to " + range[1] + ".");
+    // console.log("\n## pivotsArr[i].hits", pivotsArr[i].hits);
 
   }
 }

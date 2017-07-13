@@ -1,5 +1,6 @@
 let stockData = require("./stockData.js");
 
+// Call this with the pivotHighs array for a particular ticker to generate short signals.
 function findDemandTests (pivots, ticker) {
   // Init signals array if undefined.
   stockData.allSignals = stockData.allSignals || [];
@@ -7,12 +8,14 @@ function findDemandTests (pivots, ticker) {
   // Find demand tests (short).
   for (let i = 1; i < pivots.length; i++) { // Start @ 1 because else comparison gets undef.
     if (
-    // If previous pivot's v is greater than current pivot's v, and 
-        pivots[i-1].v > pivots[i].v &&
-    // the previous pivot's h is greater than current pivot's h, and
-        pivots[i-1].h > pivots[i].h &&
-    // current pivot's high is greater than previous pivot's low...
-        pivots[i].h > pivots[i-1].l
+    // # Original scan: greater volume than previous pivot.
+    // // If previous pivot's v is greater than current pivot's v, and 
+    //     pivots[i-1].v > pivots[i].v &&
+    // // the previous pivot's h is greater than current pivot's h, and
+    //     pivots[i-1].h > pivots[i].h &&
+    // // current pivot's high is greater than previous pivot's low...
+    //     pivots[i].h > pivots[i-1].l
+        pivots[i].hitsCount > 2
     ) {
       // Build a new signal object...
         let currentSignal = {
@@ -22,7 +25,6 @@ function findDemandTests (pivots, ticker) {
           hits: pivots[i].hits,
           hitsCount: pivots[i].hitsCount
         };
-
         // ...and add signal object to our signals array.
         stockData.allSignals.push(currentSignal);
       }

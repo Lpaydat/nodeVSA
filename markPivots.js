@@ -46,6 +46,7 @@ function markPivots (daysArray, ticker) {
     }
   }
   // Calculate prior support/resistance.
+  // Adds hits and hitCount to each ticker day
   calculateSupportOrResistance(ticker, "support", stockData.quotes[ticker]["pivotLows"]);
   calculateSupportOrResistance(ticker, "resistance", stockData.quotes[ticker]["pivotHighs"]);
 }
