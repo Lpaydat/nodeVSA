@@ -16,14 +16,15 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
   for (let i = 0; i < pivotsArr.length; i++) {
     
     pivotsArr[i].hits = [];
+    pivotsArr[i].recentHits = [];
 
     let threshold = 0.003;
     let p = pivotsArr[i][pivot];
-    // Calculate a range for this pivot.
     let range = [
       p - (p * threshold),
       p + (p * threshold),
     ];
+    let dayRange = 5;
 
     // For each pivot j until this pivot i
     for (let j = 0; j < i; j++) {
@@ -32,9 +33,14 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
         (pivotsArr[j][pivot] >= range[0]) &&
         (pivotsArr[j][pivot] <= range[1])
       ) {
-        // Store array with pivot
+        // Store array with pivot.
         pivotsArr[i].hits.push(pivotsArr[j]);
         pivotsArr[i].hitsCount = pivotsArr[i].hits.length;
+        // Capture more recent hits.
+        if (i-j < dayRange) {
+          pivotsArr[i].recentHits.push(pivotsArr[j]);
+          pivotsArr[i].recentHitsCount = pivotsArr[i].recentHits.length;
+        }
       }
     }
 

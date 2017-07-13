@@ -23,7 +23,9 @@ function findDemandTests (pivots, ticker) {
           symbol: ticker,
           trade: "short",
           hits: pivots[i].hits,
-          hitsCount: pivots[i].hitsCount
+          hitsCount: pivots[i].hitsCount,
+          recentHits: pivots[i].recentHits,
+          recentHitsCount: pivots[i].recentHitsCount
         };
         // ...and add signal object to our signals array.
         stockData.allSignals.push(currentSignal);

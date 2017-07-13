@@ -32,15 +32,15 @@ let stockData = {
     {
       date: "06-27-17",
       symbol: "GPRO",
-      hitsCount: 5,
+      hitsCount: 3,
       hits: [{}, {}, {}],
       direction: "long"
     },
     {
       date: "06-25-17",
       symbol: "AAPL",
-      hitsCount: 5,
-      hits: [{}, {}, {}],
+      hitsCount: 2,
+      hits: [{}, {}],
       direction: "short"
     }
   ],
@@ -95,7 +95,9 @@ let stockData = {
           c : 9.46,
           v : 2931317,
           pivotHigh : true,
-          pivotLow : false
+          pivotLow : false,
+          hits: [{}],
+          hitsCount: 1
         },
         {
           date : "2017-03-08",
@@ -104,7 +106,9 @@ let stockData = {
           c : 9.25,
           v : 1877478,
           pivotHigh : true,
-          pivotLow : false
+          pivotLow : false,
+          hits: [{}, {}],
+          hitsCount: 2
         }
       ],
       pivotHighs : [],
