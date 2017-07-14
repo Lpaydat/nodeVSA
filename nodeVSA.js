@@ -35,7 +35,6 @@ let fetchDataForOneStock = require("./fetchDataForOneStock.js");
 let createThrottle = require("./createThrottle.js");
 let searchAllSignals = require("./searchAllSignals.js");
 
-
 function start () {
 
   // Adds rate-limiting per data source's request; ~200 requests per minute

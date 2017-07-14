@@ -11,24 +11,20 @@ function searchAllSignals (filter) {
   let searchResults;
 
   if (filter !== undefined) { 
-    // filter = "eval(" + filter + ")";
-
     searchResults = stockData.allSignals.filter(function(signal){
-      // console.log(typeof eval(filter)); // string
-      // console.log(eval(filter)); // "signal.date === 2017-07-07"
-      // console.log(typeof eval(eval(filter))); // boolean
-      // console.log(eval(eval(filter))); // false
-
-      // return eval("eval(" + filter + ")");
       return eval(eval(filter));
-
     });
   }
 
   if (searchResults.length === stockData.allSignals.length) {
     console.log("\n" + "\x1b[31m" + "## No search results found." + "\x1b[0m" + "\n");  
   } else {
-    console.log("\n" + "\x1b[31m" + "## Search Results:" + "\x1b[0m" + "\n", searchResults);
+    console.log("\n" + "\x1b[31m" + "## Search Results:" + "\x1b[0m" + "\n");
+    console.log("symbol | date} | trade | hitsCount | recentHitsCount:");
+    let formattedResults = searchResults.map((x)=>{
+      console.log(`\n${x.symbol} | ${x.date} | ${x.trade} | ${x.hitsCount} | ${x.recentHitsCount}`);
+    });
+    formattedResults;
   }
 
 };

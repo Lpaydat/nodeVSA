@@ -16,7 +16,7 @@ function findSupplyTests (pivots, ticker) {
     //     pivots[i-1].l < pivots[i].l &&
     // // current pivot's low is less than previous pivot's high...
     //     pivots[i].l < pivots[i-1].h
-        pivots[i].hitsCount > 2
+        pivots[i].hitsCount > 0
     ) {
       // Build a new signal object...
         let currentSignal = {

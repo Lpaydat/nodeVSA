@@ -15,7 +15,7 @@ function findDemandTests (pivots, ticker) {
     //     pivots[i-1].h > pivots[i].h &&
     // // current pivot's high is greater than previous pivot's low...
     //     pivots[i].h > pivots[i-1].l
-        pivots[i].hitsCount > 2
+        pivots[i].recentHitsCount > 0
     ) {
       // Build a new signal object...
         let currentSignal = {
