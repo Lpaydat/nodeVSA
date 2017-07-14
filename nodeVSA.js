@@ -34,6 +34,7 @@ let stockData = require("./stockData.js");
 let fetchDataForOneStock = require("./fetchDataForOneStock.js");
 let createThrottle = require("./createThrottle.js");
 let searchAllSignals = require("./searchAllSignals.js");
+let formatSignal = require("./formatSignal.js");
 
 function start () {
 
@@ -62,7 +63,7 @@ function start () {
     // Otherwise show all signals.
       console.log("\n" + "\x1b[31m" + "## No search filter provided." + "\x1b[0m" + "\n");
       // console.log(stockData.allSignals);
-      return searchAllSignals(true);
+      return stockData.allSignals.map(formatSignal);
     }
   })
   .catch((err)=>{

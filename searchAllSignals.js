@@ -5,6 +5,8 @@
   // "signal.symbol === 'AAPL' && signal.trade === 'long'"
 
 let stockData = require("./stockData.js");
+let formatSignal = require("./formatSignal.js");
+
 
 function searchAllSignals (filter) {
 
@@ -25,16 +27,9 @@ function searchAllSignals (filter) {
     console.log("symbol | date} | trade | hitsCount | recentHitsCount:");
     let formattedResults = searchResults.sort((x, y)=>{
       return x.recentHitsCount - y.recentHitsCount;
-    }).map((x)=>{
-      console.log(`${x.symbol} | ${x.date} | ${x.trade} | ${x.hitsCount} | ${x.recentHitsCount}`);
-    })
-    formattedResults;
+    }).map(formatSignal);
   }
 
 };
 
 module.exports = searchAllSignals;
-
-
-// 'signal.date === ' + (new Date()).toISOString().slice(0,10)
-// signal.date === "2017-07-07"
