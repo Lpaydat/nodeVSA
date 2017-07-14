@@ -61,7 +61,8 @@ function start () {
     } else {
     // Otherwise show all signals.
       console.log("\n" + "\x1b[31m" + "## No search filter provided." + "\x1b[0m" + "\n");
-      console.log(stockData.allSignals);
+      // console.log(stockData.allSignals);
+      return searchAllSignals(true);
     }
   })
   .catch((err)=>{

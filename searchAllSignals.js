@@ -10,20 +10,24 @@ function searchAllSignals (filter) {
 
   let searchResults;
 
-  if (filter !== undefined) { 
+  // If a filter was passed as command line argument to nodeVSA
+  if (filter) { 
     searchResults = stockData.allSignals.filter(function(signal){
       return eval(eval(filter));
     });
   }
+
 
   if (searchResults.length === stockData.allSignals.length) {
     console.log("\n" + "\x1b[31m" + "## No search results found." + "\x1b[0m" + "\n");  
   } else {
     console.log("\n" + "\x1b[31m" + "## Search Results:" + "\x1b[0m" + "\n");
     console.log("symbol | date} | trade | hitsCount | recentHitsCount:");
-    let formattedResults = searchResults.map((x)=>{
-      console.log(`\n${x.symbol} | ${x.date} | ${x.trade} | ${x.hitsCount} | ${x.recentHitsCount}`);
-    });
+    let formattedResults = searchResults.sort((x, y)=>{
+      return x.recentHitsCount - y.recentHitsCount;
+    }).map((x)=>{
+      console.log(`${x.symbol} | ${x.date} | ${x.trade} | ${x.hitsCount} | ${x.recentHitsCount}`);
+    })
     formattedResults;
   }
 

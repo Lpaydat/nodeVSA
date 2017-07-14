@@ -8,7 +8,6 @@ function findSupplyTests (pivots, ticker) {
   // Find supply tests (long).
   for (let i = 1; i < pivots.length; i++) { // Start @ 1 because else comparison gets undef.
     if (
-
     // # Original scan: greater volume than previous pivot.
     // // If previous pivot's v is greater than current pivot's v, and 
     //     pivots[i-1].v > pivots[i].v &&
@@ -16,6 +15,8 @@ function findSupplyTests (pivots, ticker) {
     //     pivots[i-1].l < pivots[i].l &&
     // // current pivot's low is less than previous pivot's high...
     //     pivots[i].l < pivots[i-1].h
+        
+        // pivots[i].recentHitsCount > 0
         pivots[i].hitsCount > 0
     ) {
       // Build a new signal object...
@@ -26,7 +27,8 @@ function findSupplyTests (pivots, ticker) {
           hits: pivots[i].hits,
           hitsCount: pivots[i].hitsCount,
           recentHits: pivots[i].recentHits,
-          recentHitsCount: pivots[i].recentHitsCount
+          recentHitsCount: pivots[i].recentHitsCount,
+          data: pivots[i]
         };
         // ...and add signal object to our signals array.
         stockData.allSignals.push(currentSignal);
