@@ -6,15 +6,16 @@ nodeVSA retrieves stock data for a list of your tickers, cleans and transforms i
 
 ## Overview
 
-In stock trading, "support" and "resistance" refer to price levels that represent invisible floors and ceilings.
+In stock trading, *support* and *resistance* refer to price levels that represent invisible floors and ceilings.
 
 The stock price tends to resist falling below a support level, or rising above a resistance level.
 
 You can detect the strength of a support/resistance level by observing how many unsuccessful attempts are made to break through it. 
 
-You can also detect when buying or selling pressure has been depleted based on what happens to the trading volume as the price revisits that level. If a stock price revisits an support/resistance level but on lower volume each time, this can signal that the stock is ready to change directions.
+You can also detect when buying or selling pressure has been depleted based on what happens to the trading volume as the price revisits that level. If a stock price revisits an support/resistance level but on lower volume each time, this can signal that the stock is ready to change directions. These "revisitations" are called pivots.
 
-A pivot is a day that has an outlier high or low. nodeVSA detects pivot highs/lows, and then compares them to the stock's behavior every time it made a pivot at that level in the past.
+A *pivot* is a day that has an outlier high or low. nodeVSA detects pivots and scans for prior pivots at the same price. It's interesting and sometimes informative to see what the price has historically done at the current level overall, but recent pivots (within the last 10 trading days) carry more weight.
+
 
 ## Installation:
 
@@ -66,7 +67,6 @@ The signal object looks like:
 ```
 
 The signal object also exposes data for the trading day these hits were generated: `signal.hits` and `signal.recentHits` are arrays of trading day objects.
-
 
 A trading day object looks like:
 ```
