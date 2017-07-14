@@ -18,17 +18,19 @@ Notice how the price is trading within a **channel**, a range formed between a s
 
 You can detect the strength of a support/resistance level by observing how many unsuccessful attempts are made to break through it. With four unsuccessful attempts to break below, this support level looks pretty strong.
 
-You can also detect when buying or selling pressure has been depleted based on what happens to the trading volume as the price revisits that level. If a stock price revisits an support/resistance level but on lower volume each time, this can signal that the stock is ready to change directions. These "revisitations" are called pivots.
+You can also detect when buying or selling pressure has been depleted by what happens to the trading volume as the price revisits that level. If a stock price revisits an support/resistance level but on lower volume each time, this can signal that the stock is ready to change directions. These "revisitations" are called pivots.
 
-A **pivot** is a day that has an outlier high or low. nodeVSA detects pivots and scans for prior pivots at the same price. It's interesting and sometimes informative to see what the price has historically done at the current level overall, but recent pivots (within the last 10 trading days) carry more weight.
+A **pivot** is a day that has an outlier high or low:
 
 ![Pivot Highs and Lows](./img/pivots.png)
+
+nodeVSA detects pivots and scans for prior pivots close to the same price. It's interesting and sometimes informative to see what the price has historically done at the current level overall, but recent pivots (within the last 10 trading days) carry more weight.
 
 Let's take a look at what the volume is doing on each of these pivot lows.
 
 ![AAPL - Pivot Lows with Volume](./img/pivots-w-vol.png)
 
-Notice how on each subsequent pivot low, the volume decreases. This tells me that the selling pressure (the interest in selling) at that price is decreasing. By the last pivot low it appears to have dried up. This means that the stock may be ready for a turnaround, and this looks like a good time to buy.
+Notice how on each subsequent pivot low, the volume decreases. This tells us that the selling pressure (the interest in selling) at that price is decreasing. By the last pivot low it appears to have dried up. This means that the stock may be ready for a turnaround, and this looks like a good time to buy.
 
 ## Installation:
 
@@ -46,7 +48,7 @@ Run `node nodeVSA`.
 
 ## Filtering Results
 
-You can add search criteria via command line argument:
+You can filter search results by adding your search criteria as a command line argument:
 
   `node nodeVSA {search criteria as a string}`
 
