@@ -48,6 +48,10 @@ Add your own stock tickers to `stockList.js`.
 
 Run `node nodeVSA`.
 
+## Throttling:
+
+At Alpha Vantage's request, server requests are throttled at a rate of ~200/minute. You can modify this in `createThrottle.js` but with large stock ticker lists you run the risk of getting `HTTP 503` errors once you make their server angry.
+
 ## Filtering Results
 
 You can filter search results by adding your search criteria as a command line argument:
