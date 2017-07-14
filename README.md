@@ -6,16 +6,27 @@ nodeVSA retrieves stock data for a list of your tickers, cleans and transforms i
 
 ## Overview
 
-In stock trading, *support* and *resistance* refer to price levels that represent invisible floors and ceilings.
+In stock trading, **support** and **resistance** refer to price levels that represent invisible floors and ceilings.
 
 The stock price tends to resist falling below a support level, or rising above a resistance level.
+
+For example, here's a current chart for AAPL.
+
+![AAPL - Support and Resistance](./img/pivots-w-vol.png)
 
 You can detect the strength of a support/resistance level by observing how many unsuccessful attempts are made to break through it. 
 
 You can also detect when buying or selling pressure has been depleted based on what happens to the trading volume as the price revisits that level. If a stock price revisits an support/resistance level but on lower volume each time, this can signal that the stock is ready to change directions. These "revisitations" are called pivots.
 
-A *pivot* is a day that has an outlier high or low. nodeVSA detects pivots and scans for prior pivots at the same price. It's interesting and sometimes informative to see what the price has historically done at the current level overall, but recent pivots (within the last 10 trading days) carry more weight.
+A **pivot** is a day that has an outlier high or low. nodeVSA detects pivots and scans for prior pivots at the same price. It's interesting and sometimes informative to see what the price has historically done at the current level overall, but recent pivots (within the last 10 trading days) carry more weight.
 
+![Pivot Highs and Lows](./img/pivots.png)
+
+Let's take a look at what the volume is doing on each of these pivot lows.
+
+![AAPL - Pivot Lows with Volume](./img/pivots-w-vol.png)
+
+Notice how on each subsequent pivot low, the volume decreases. This tells me that the selling pressure (the interest in selling) at that price is decreasing. By the last pivot low it appears to have dried up. This means that the stock may be ready for a turnaround.
 
 ## Installation:
 
