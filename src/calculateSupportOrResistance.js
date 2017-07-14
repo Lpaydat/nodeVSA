@@ -2,7 +2,7 @@ let stockData = require("./stockData.js");
 
 // Used in findDemandTests and findSupplyTests.
 // Pass in the ticker, trade direction (sup/res) as string, and signal object in progress.
-// Counts priot pivot highs/lows within range, and stores them in an array on signal object.
+// Counts prior pivot highs/lows within range, and stores them in an array on signal object.
 function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
   if (supportOrResistance === "support") {
     var pivot = "l";

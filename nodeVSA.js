@@ -30,11 +30,11 @@
 
 const TICKER_LIST = require("./stockList.js");
 
-let stockData = require("./stockData.js");
-let fetchDataForOneStock = require("./fetchDataForOneStock.js");
-let createThrottle = require("./createThrottle.js");
-let searchAllSignals = require("./searchAllSignals.js");
-let formatSignal = require("./formatSignal.js");
+let stockData = require("./src/stockData.js");
+let fetchDataForOneStock = require("./src/fetchDataForOneStock.js");
+let createThrottle = require("./src/createThrottle.js");
+let searchAllSignals = require("./src/searchAllSignals.js");
+let formatSignal = require("./src/formatSignal.js");
 
 function start () {
 

@@ -50,7 +50,7 @@ Run `node nodeVSA`.
 
 ## Throttling:
 
-At Alpha Vantage's request, server requests are throttled at a rate of ~200/minute. You can modify this in `createThrottle.js` but with large stock ticker lists you run the risk of getting `HTTP 503` errors once you make their server angry.
+At Alpha Vantage's request, server requests are throttled at a rate of ~200/minute. You can modify this in `createThrottle.js` but with large stock ticker lists you run the risk of `HTTP 503` errors when their server gets angry.
 
 ## Filtering Results
 
@@ -64,7 +64,7 @@ The available search critera are:
 - `signal.trade`: `'long' | 'short'`
 - `signal.symbol`: `'TSLA'`, etc.
 - `signal.hitsCount`: `> 0`, etc.
-- `signal.recentHitsCount: `> 0`, etc.
+- `signal.recentHitsCount`: `> 0`, etc.
 
 For example, to show only results for long trades for Apple (AAPL), run:
 

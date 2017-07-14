@@ -1,4 +1,4 @@
-const CONFIG = require("./config.js")
+const CONFIG = require("../config.js")
 const RP = require("request-promise");
 
 let stockData = require("./stockData.js");
