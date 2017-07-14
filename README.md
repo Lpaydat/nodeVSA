@@ -32,6 +32,8 @@ Let's take a look at what the volume is doing on each of these pivot lows.
 
 Notice how on each subsequent pivot low, the volume decreases. This tells us that the selling pressure (the interest in selling) at that price is decreasing. By the last pivot low it appears to have dried up. This means that the stock may be ready for a turnaround, and this looks like a good time to buy.
 
+nodeVSA finds these possible trading setups for you.
+
 ## Installation:
 
 Run `git clone https://github.com/wnmurphy/nodeVSA.git`
