@@ -34,6 +34,8 @@ let stockData = {
       symbol: "GPRO",
       hitsCount: 3,
       hits: [{}, {}, {}],
+      recentHitsCount: 3,
+      recentHits: [{}, {}, {}],
       direction: "long"
     },
     {
@@ -41,6 +43,8 @@ let stockData = {
       symbol: "AAPL",
       hitsCount: 2,
       hits: [{}, {}],
+      recentHitsCount: 1,
+      recentHits: [{}],
       direction: "short"
     }
   ],
