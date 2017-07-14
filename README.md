@@ -24,7 +24,7 @@ A **pivot** is a day that has an outlier high or low:
 
 nodeVSA detects pivots and scans for prior pivots close to the same price. It's interesting and sometimes informative to see what the price has historically done at the current level overall, but recent pivots (within the last 10 trading days) carry more weight.
 
-You can detect when buying or selling pressure has been depleted by what happens to the trading volume as the price revisits a support/resistance level. If a stock price revisits an support/resistance level but on lower volume each time, this can signal that the stock is ready to change directions.
+You can detect when buying or selling pressure has been depleted by what happens to the trading volume as the price revisits a support/resistance level. If a stock price revisits a support/resistance level but on lower volume each time, this can signal that the stock is ready to change directions.
 
 Let's take a look at what the volume is doing on each of these pivot lows.
 
