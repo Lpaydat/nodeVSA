@@ -10,11 +10,13 @@ In stock trading, **support** and **resistance** refer to price levels that repr
 
 The stock price tends to resist falling below a support level, or rising above a resistance level.
 
-For example, here's a current chart for AAPL.
+For example, here's a current chart for AAPL:
 
-![AAPL - Support and Resistance](./img/pivots-w-vol.png)
+![AAPL - Support and Resistance](./img/sup-res.png)
 
-You can detect the strength of a support/resistance level by observing how many unsuccessful attempts are made to break through it. 
+Notice how the price is trading within a **channel**, a range formed between a support and a resistance level.
+
+You can detect the strength of a support/resistance level by observing how many unsuccessful attempts are made to break through it. With four unsuccessful attempts to break below, this support level looks pretty strong.
 
 You can also detect when buying or selling pressure has been depleted based on what happens to the trading volume as the price revisits that level. If a stock price revisits an support/resistance level but on lower volume each time, this can signal that the stock is ready to change directions. These "revisitations" are called pivots.
 
@@ -26,7 +28,7 @@ Let's take a look at what the volume is doing on each of these pivot lows.
 
 ![AAPL - Pivot Lows with Volume](./img/pivots-w-vol.png)
 
-Notice how on each subsequent pivot low, the volume decreases. This tells me that the selling pressure (the interest in selling) at that price is decreasing. By the last pivot low it appears to have dried up. This means that the stock may be ready for a turnaround.
+Notice how on each subsequent pivot low, the volume decreases. This tells me that the selling pressure (the interest in selling) at that price is decreasing. By the last pivot low it appears to have dried up. This means that the stock may be ready for a turnaround, and this looks like a good time to buy.
 
 ## Installation:
 
