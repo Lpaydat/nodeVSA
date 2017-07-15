@@ -9,7 +9,6 @@ let formatSignal = require("./formatSignal.js");
 
 
 function searchAllSignals (filter) {
-
   let searchResults;
 
   // If a filter was passed as command line argument to nodeVSA
@@ -21,9 +20,9 @@ function searchAllSignals (filter) {
 
 
   if (searchResults.length === stockData.allSignals.length) {
-    console.log("\n" + "\x1b[31m" + "## No search results found." + "\x1b[0m" + "\n");  
+    console.log("\n" + "\x1b[31m" + "No search results found." + "\x1b[0m" + "\n");  
   } else {
-    console.log("\n" + "\x1b[31m" + "## Search Results:" + "\x1b[0m" + "\n");
+    console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m" + "\n");
     console.log("symbol | date} | trade | hitsCount | recentHitsCount:");
     let formattedResults = searchResults.sort((x, y)=>{
       return x.recentHitsCount - y.recentHitsCount;

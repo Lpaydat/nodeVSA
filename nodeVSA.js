@@ -35,6 +35,7 @@ let fetchDataForOneStock = require("./src/fetchDataForOneStock.js");
 let createThrottle = require("./src/createThrottle.js");
 let searchAllSignals = require("./src/searchAllSignals.js");
 let formatSignal = require("./src/formatSignal.js");
+let writeCSV = require("./src/writeCSV.js");
 
 function start () {
 
@@ -52,7 +53,7 @@ function start () {
   // Main logic.
   Promise.all(promisifiedTickerArray)
   .then(()=>{
-    console.log("\n" + "\x1b[31m" + "## All ticker data retrieved." + "\x1b[0m" + "\n");
+    console.log("\n" + "\x1b[31m" + "All ticker data retrieved." + "\x1b[0m" + "\n");
   })
   .then(()=>{
     // If user passes in a search string at command line, use it.
@@ -61,8 +62,10 @@ function start () {
       return searchAllSignals(searchFilter);
     } else {
     // Otherwise show all signals.
-      console.log("\n" + "\x1b[31m" + "## No search filter provided." + "\x1b[0m" + "\n");
-      // console.log(stockData.allSignals);
+      console.log("\n" + "\x1b[31m" + "No search filter provided. All results: " + "\x1b[0m" + "\n");
+      console.log("symbol | date} | trade | hitsCount | recentHitsCount:");
+      // console.log(stockData.allSignals); // all raw signal objects
+      writeCSV(stockData.allSignals);
       return stockData.allSignals.map(formatSignal);
     }
   })

@@ -39,7 +39,7 @@ let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
     resolve();
   })
   .catch((err) => {
-    console.error("\n" + "\x1b[31m" + "## Ticker: " + ticker + "\n" + "## Error: " + "\x1b[0m" + "\n" + err);
+    console.error("\n" + "\x1b[31m" + "Ticker: " + ticker + "\n" + "Error: " + "\x1b[0m" + "\n" + err);
     reject(err);
   })
 }); 
