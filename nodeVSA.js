@@ -64,7 +64,9 @@ function start () {
     // Otherwise show all signals.
       console.log("\n" + "\x1b[31m" + "No search filter provided. All results: " + "\x1b[0m" + "\n");
       console.log("symbol | date} | trade | hitsCount | recentHitsCount:");
-      // console.log(stockData.allSignals); // all raw signal objects
+      
+      // console.log(stockData.allSignals); // # Debugging: all raw signal objects
+      
       writeCSV(stockData.allSignals);
       return stockData.allSignals.map(formatSignal);
     }

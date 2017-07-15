@@ -1,6 +1,11 @@
-let fs = require('fs');
+let fs = require("fs");
 
 function writeCSV (signalsArray) {
+  // Create new file, overwrite existing old results.
+  fs.writeFile("results.csv", "", (err) => {
+    if (err) throw err;
+  });
+
   let csvArray = [];
   for (let i = 0; i < signalsArray.length; i++) {
     let line = [ 
@@ -9,14 +14,12 @@ function writeCSV (signalsArray) {
       signalsArray[i]["trade"],
       signalsArray[i]["hitsCount"],
       signalsArray[i]["recentHitsCount"],
-    ].join(',')
-    csvArray.push(line);  
+    ].join(",")
+    fs.appendFile("results.csv", line + "\n", "utf8", (err) => {
+      if (err) throw err;
+    });
   }
-  csvArray.join('\n');
-  fs.writeFile('results.csv', csvArray, "utf8", (err) => {
-    if (err) throw err;
-    console.log("CSV results written to disk."); 
-  });
+  console.log("CSV results written to disk."); 
 }
 
 module.exports = writeCSV;
