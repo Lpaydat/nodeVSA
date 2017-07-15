@@ -5,14 +5,11 @@
   // "signal.symbol === 'AAPL' && signal.trade === 'long'"
 
 let stockData = require("./stockData.js");
-let formatSignal = require("./formatSignal.js");
-let writeCSV = require("./writeCSV.js");
-
 
 function searchAllSignals (filter) {
   let searchResults;
 
-  // If a filter was passed as command line argument to nodeVSA
+  // Eval string filter if provided.
   if (filter) { 
     searchResults = stockData.allSignals.filter(function(signal){
       return eval(eval(filter));
@@ -21,15 +18,10 @@ function searchAllSignals (filter) {
 
 
   if (searchResults.length === stockData.allSignals.length) {
-    console.log("\n" + "\x1b[31m" + "No search results found." + "\x1b[0m" + "\n");  
+    return console.log("\n" + "\x1b[31m" + "No search results found." + "\x1b[0m" + "\n");
   } else {
     console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m" + "\n");
-    console.log("symbol | date | trade | hitsCount | recentHitsCount:");
-    let formattedResults = searchResults.sort((x, y)=>{
-      return x.recentHitsCount - y.recentHitsCount;
-    });
-    writeCSV(formattedResults);
-    formattedResults.map(formatSignal);
+    return searchResults;
   }
 
 };
