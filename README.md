@@ -86,7 +86,7 @@ For example, to show only results for long trades for Apple (AAPL), run:
 
 The signal object looks like:
 
-~~~json
+~~~javascript
 {
   date: "06-25-17",
   symbol: "AAPL",
@@ -104,7 +104,7 @@ The signal object also exposes data for the trading day these hits were generate
 
 A trading day object looks like:
 
-~~~json
+~~~javascript
 {
    date : "2017-03-09",
    h : 9.59,
