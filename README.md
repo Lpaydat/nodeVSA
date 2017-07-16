@@ -54,11 +54,13 @@ Run `node nodeVSA`.
 
 At Alpha Vantage's request, server requests are throttled at a rate of ~200/minute. You can modify this in `createThrottle.js` but with large stock ticker lists you run the risk of `HTTP 503` errors when their server gets angry.
 
-`createThrottle` takes two numbers as arguments: `series` and `timeout`.  `series` represents the number of requests to send in a batch. `timeout` represents the number of milliseconds to wait between request batches.
+`createThrottle` takes two numbers as arguments: `series` and `timeout`.
 
-By default assignment in the method signature, `series` gets 10 and `timeout` gets 1000ms, meaning that every second, 10 requests will be sent.
+`series` represents the number of requests to send in a batch. `timeout` represents the number of milliseconds to wait between request batches.
 
-In the method call, `series` is set to 3, and `timeout` is set to 1000ms, meaning that a batch of 3 request is sent every second.  3 requests per second is 180 requests per minute, which keeps us below the server throttle of 200/minute.
+By default assignment in the method signature, `series` gets 10 and `timeout` gets 1000ms, meaning that 10 requests will be sent every second.
+
+In the actual method call, `series` is set to 3 and `timeout` is set to 1000ms, meaning that a batch of 3 request is sent every second.  3 requests per second is 180 requests per minute, which keeps us below the server throttle of 200/minute.
 
 ## Filtering Results
 
@@ -95,7 +97,9 @@ The signal object looks like:
 }
 ```
 
-The signal object also exposes data for the trading day these hits were generated: `signal.hits` and `signal.recentHits` are arrays of trading day objects.
+`{}` is shorthand for a trading day object, below.
+
+The signal object also exposes data for the trading day these hits were generated: `signal.hits` and `signal.recentHits` are arrays of trading day objects. This is useful for comparing volume between the current day, and prior days with a pivot in the same price range.
 
 A trading day object looks like:
 ```
@@ -118,11 +122,11 @@ nodeVSA is written to analyze stock data on a daily time series, but supports ot
 
 The [Alpha Vantage API](https://www.alphavantage.co/documentation) provides the following time series options:
 
-- Intraday (at 1min, 5min, 15min, 30min, 60min intervals)
-- Daily (nodeVSA default)
-- Daily Adjusted (returns additional fields like dividend amount)
-- Weekly
-- Monthly
+- [Intraday](https://www.alphavantage.co/documentation/#intraday) (at 1min, 5min, 15min, 30min, 60min intervals)
+- [Daily](https://www.alphavantage.co/documentation/#daily) (nodeVSA default)
+- [Daily Adjusted](https://www.alphavantage.co/documentation/#dailyadj) (returns additional fields like dividend amount)
+- [Weekly](https://www.alphavantage.co/documentation/#weekly)
+- [Monthly](https://www.alphavantage.co/documentation/#monthly)
 
 To modify the time series, alter the `function` parameter in the query string sent to Alpha Vantage on each request. This is in `src/fetchDataForOneStock.js`, in the param hash passed to the call to `RP`.
 
@@ -136,11 +140,11 @@ Change the value for the `function` key to:
 
 If you set the time series to `TIME_SERIES_INTRADAY`, you'll need to add the `interval` property to the param hash, and set it equal to one of the following:
 
-- "1min"
-- "5min"
-- "15min"
-- "30min"
-- "60min"
+- `"1min"`
+- `"5min"`
+- `"15min"`
+- `"30min"`
+- `"60min"`
 
 ## Output to CSV File
 
@@ -149,3 +153,10 @@ Search results are written to `results.csv` in the root directory on every run, 
 Fields are comma-separated, and results are newline-separated.
 
 This file is overwritten each time you run nodeVSA.
+
+## Resources
+
+To learn more about volume analysis at pivot points, check out the following:
+
+- [*Master the Markets*, by Tom Williams](https://www.tradeguider.com/mtm_251058.pdf)
+- [*Trades ABout to Happen*, by David H. Weis](https://www.amazon.com/gp/product/0470487801/)
