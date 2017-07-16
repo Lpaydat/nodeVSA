@@ -38,17 +38,19 @@ nodeVSA helps you find these trading setups by identifying the number of prior p
 
 ## Installation:
 
-Run `git clone https://github.com/wnmurphy/nodeVSA.git`
+To set up nodeVSA:
 
-Run `npm install` to install dependencies.
+1. Run `git clone https://github.com/wnmurphy/nodeVSA.git`
 
-Visit [Alpha Vantage](https://www.alphavantage.co/support/#api-key) and get an API key.
+2. Run `npm install` to install dependencies.
 
-Create a `config.js` file in the root directory, containing `module.exports = { API_KEY : YOUR_API_KEY};`
+3. Visit [Alpha Vantage](https://www.alphavantage.co/support/#api-key) and get an API key.
 
-Add your own stock tickers to `stockList.js`.
+4. Create a `config.js` file in the root directory, containing `module.exports = { API_KEY : YOUR_API_KEY};`
 
-Run `node nodeVSA`.
+5. Add your own stock tickers to `stockList.js`.
+
+6. Run `node nodeVSA`.
 
 ## Throttling:
 
