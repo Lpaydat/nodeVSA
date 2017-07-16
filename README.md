@@ -158,5 +158,5 @@ This file is overwritten each time you run nodeVSA.
 
 To learn more about volume analysis at pivot points, check out the following:
 
-- [*Master the Markets*, by Tom Williams](https://www.tradeguider.com/mtm_251058.pdf)
-- [*Trades ABout to Happen*, by David H. Weis](https://www.amazon.com/gp/product/0470487801/)
+- [*Master the Markets*](https://www.tradeguider.com/mtm_251058.pdf), by Tom Williams
+- [*Trades About to Happen*](https://www.amazon.com/gp/product/0470487801/), by David H. Weis
