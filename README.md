@@ -1,6 +1,6 @@
 # nodeVSA
 
-nodeVSA is a tool to retrieve daily stock data for a list of your tickers, clean and transform it, and scans for pivots that have prior pivots within range.
+nodeVSA is a tool that retrieves a set of daily stock data for a list of your tickers, cleans and transforms it, and scans for pivots that have prior pivots within range.
 
 nodeVSA consumes data from the free [Alpha Vantage](https://www.alphavantage.co/) stock data API.
 
