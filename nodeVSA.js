@@ -59,13 +59,18 @@ function start () {
     let results;
     // If user passes in a search string at command line, use it.
     if (process.argv[2]) {
+      
       let searchFilter = process.argv[2];
       results = searchAllSignals(searchFilter).sort((x, y)=>{
         return x.recentHitsCount - y.recentHitsCount;
       });
+      console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m" + "\n");
+
     } else {
+      
       results = stockData.allSignals;
       console.log("\n" + "\x1b[31m" + "No search filter provided. All results: " + "\x1b[0m" + "\n");
+    
     }
     printResults(results);
     writeCSV(results);

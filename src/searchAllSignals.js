@@ -16,11 +16,10 @@ function searchAllSignals (filter) {
     });
   }
 
-
+  // If filtering had no result, log and return.
   if (searchResults.length === stockData.allSignals.length) {
     return console.log("\n" + "\x1b[31m" + "No search results found." + "\x1b[0m" + "\n");
   } else {
-    console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m" + "\n");
     return searchResults;
   }
 
