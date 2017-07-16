@@ -2,7 +2,7 @@
 
 nodeVSA is a tool to retrieve daily stock data for a list of your tickers, clean and transform it, and scans for pivots that have prior pivots within range.
 
-nodeVSA consumes data from the [Alpha Vantage](https://www.alphavantage.co/).
+nodeVSA consumes data from the free [Alpha Vantage](https://www.alphavantage.co/) stock data API.
 
 ## Overview
 
@@ -85,7 +85,8 @@ For example, to show only results for long trades for Apple (AAPL), run:
 `recentHitsCount` is the number of hits within the last 10 days, which are more relevant.
 
 The signal object looks like:
-```
+
+~~~json
 {
   date: "06-25-17",
   symbol: "AAPL",
@@ -95,14 +96,15 @@ The signal object looks like:
   recentHits: [{}],
   direction: "short"
 }
-```
+~~~
 
 `{}` is shorthand for a trading day object, below.
 
 The signal object also exposes data for the trading day these hits were generated: `signal.hits` and `signal.recentHits` are arrays of trading day objects. This is useful for comparing volume between the current day, and prior days with a pivot in the same price range.
 
 A trading day object looks like:
-```
+
+~~~json
 {
    date : "2017-03-09",
    h : 9.59,
@@ -114,7 +116,7 @@ A trading day object looks like:
    hits: [{}],
    hitsCount: 1
  }
-```
+~~~
 
 ## Changing the Time Series of the Data
 
