@@ -40,7 +40,7 @@ let writeCSV = require("./src/writeCSV.js");
 function start () {
 
   // Adds rate-limiting per data source's request; ~200 requests per minute
-  var throttle = createThrottle(3, 1e3); // 3 requests every 1 second
+  var throttle = createThrottle(3, 15e2); // 3 requests every 1.5 seconds
   
   // Create an array containing a promise for each ticker request.
   let promisifiedTickerArray = TICKER_LIST.map(

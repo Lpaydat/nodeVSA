@@ -5,8 +5,7 @@ function writeCSV (signalsArray) {
   fs.writeFile("results.csv", "", (err) => {
     if (err) throw err;
   });
-
-  let csvArray = [];
+  fs.appendFileSync("results.csv", "symbol,date,trade,hits,recentHits\n", "utf8");
   for (let i = 0; i < signalsArray.length; i++) {
     let line = [ 
       signalsArray[i]["symbol"],
