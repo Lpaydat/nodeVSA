@@ -41,7 +41,7 @@ let writeCSV = require("./src/writeCSV.js");
 (function () {
 
   // Adds rate-limiting per data source's request; < 200 requests per minute
-  var throttle = createThrottle(1, 1e3); // 2 requests every 1.5 seconds
+  var throttle = createThrottle(3, 1e3); // # requests every second
   
   // Create an array containing a promise for each ticker request.
   let promisifiedTickerArray = TICKER_LIST.map(
@@ -52,7 +52,7 @@ let writeCSV = require("./src/writeCSV.js");
   );
   
   // Main logic.
-  Promise.all(promisifiedTickerArray)
+  Promise.all(promisifiedTickerArray.map(p => p.catch(e => e)))
   .then(()=>{
     console.log("\n" + "\x1b[31m" + "All ticker data retrieved." + "\x1b[0m" + "\n");
   })
