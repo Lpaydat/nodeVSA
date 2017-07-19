@@ -77,14 +77,19 @@ The available search critera are:
 - `signal.symbol`: `'TSLA'`, etc.
 - `signal.hitsCount`: `> 0`, etc.
 - `signal.recentHitsCount`: `> 0`, etc.
+- `signal.recentHitsOnLowerVolumeCount`: `> 0`, etc.
 
 For example, to show only results for long trades for Apple (AAPL), run:
 
   `node nodeVSA "signal.trade === 'long' && signal.symbol === 'AAPL'"`
 
+To show only results after a certain date, run:
+  
+  `node nodeVSA "signal.date > '2017-07-01'"`
+
 `hitsCount` is the number of prior pivots in the data set within 0.3% (three-tenths of a percent) of a pivot.
 
-`recentHitsCount` is the number of hits within the last 10 days, which are more relevant.
+`recentHitsCount` is the number of hits within the last month, which are more relevant.
 
 The signal object looks like:
 
@@ -96,6 +101,8 @@ The signal object looks like:
   hits: [{}, {}],
   recentHitsCount: 1,
   recentHits: [{}],
+  recentHitsOnLowerVolumeCount: 1,
+  recentHitsOnLowerVolume: [{}],
   direction: "short"
 }
 ~~~
