@@ -29,9 +29,9 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
       p + (p * threshold),
     ];
     
-    // recentHits looks at last X pivots...
-    // recentHits means "How many pivots of all time are the X most recent?"
-    let priorPivotRange = 10; 
+    // This is used to calculate the lookback period to find each pivot's recent prior hits.
+    // Because the date calculation below is base 10, and needs to account for a month turnover, this lookback is one month (100) + 30 days.
+    let dayRange = 130; 
 
     // For each pivot j until this pivot i
     for (let j = 0; j < i; j++) {
@@ -46,7 +46,12 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
 
         // Capture more recent hits.
         // Removes dash from dates, then compares difference to see if most recent pivot is within day range.
-        if (( pivotsArr[i]["date"].replace(/-/g, '') - pivotsArr[j]["date"].replace(/-/g, '') ) < priorPivotRange) {
+
+        // # DEBUG: see the date comparisons
+        // console.log("ith pivot date:", pivotsArr[i]["date"].replace(/-/g, ''));
+        // console.log("jth pivot date:", pivotsArr[j]["date"].replace(/-/g, ''));
+
+        if (( pivotsArr[i]["date"].replace(/-/g, '') - pivotsArr[j]["date"].replace(/-/g, '') ) < dayRange) {
           pivotsArr[i].recentHits.push(pivotsArr[j]);
           pivotsArr[i].recentHitsCount = pivotsArr[i].recentHits.length;
           // If the volume is lower on any of the prior recent pivots, add a recentHitOnLowerVolume.

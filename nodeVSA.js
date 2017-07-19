@@ -37,10 +37,11 @@ let searchAllSignals = require("./src/searchAllSignals.js");
 let printResults = require("./src/printResults.js");
 let writeCSV = require("./src/writeCSV.js");
 
-function start () {
+// Main/Start:
+(function () {
 
-  // Adds rate-limiting per data source's request; ~200 requests per minute
-  var throttle = createThrottle(3, 15e2); // 3 requests every 1.5 seconds
+  // Adds rate-limiting per data source's request; < 200 requests per minute
+  var throttle = createThrottle(1, 1e3); // 2 requests every 1.5 seconds
   
   // Create an array containing a promise for each ticker request.
   let promisifiedTickerArray = TICKER_LIST.map(
@@ -61,9 +62,7 @@ function start () {
     if (process.argv[2]) {
       
       let searchFilter = process.argv[2];
-      results = searchAllSignals(searchFilter).sort((x, y)=>{
-        return x.recentHitsCount - y.recentHitsCount;
-      });
+      results = searchAllSignals(searchFilter);
       console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m" + "\n");
 
     } else {
@@ -78,5 +77,4 @@ function start () {
   .catch((err)=>{
     console.error(err);
   });
-}
-start();
+})();
