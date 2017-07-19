@@ -19,6 +19,8 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
     pivotsArr[i].hitsCount = 0;
     pivotsArr[i].recentHits = [];
     pivotsArr[i].recentHitsCount = 0;
+    pivotsArr[i].recentHitsOnLowerVolume = [];
+    pivotsArr[i].recentHitsOnLowerVolumeCount = 0;
 
     let threshold = 0.003;
     let p = pivotsArr[i][pivot];
@@ -26,7 +28,10 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
       p - (p * threshold),
       p + (p * threshold),
     ];
-    let dayRange = 5;
+    
+    // recentHits looks at last X pivots...
+    // recentHits means "How many pivots of all time are the X most recent?"
+    let priorPivotRange = 10; 
 
     // For each pivot j until this pivot i
     for (let j = 0; j < i; j++) {
@@ -38,10 +43,17 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
         // Store array with pivot.
         pivotsArr[i].hits.push(pivotsArr[j]);
         pivotsArr[i].hitsCount = pivotsArr[i].hits.length;
+
         // Capture more recent hits.
-        if ((i-j) < dayRange) {
+        // Removes dash from dates, then compares difference to see if most recent pivot is within day range.
+        if (( pivotsArr[i]["date"].replace(/-/g, '') - pivotsArr[j]["date"].replace(/-/g, '') ) < priorPivotRange) {
           pivotsArr[i].recentHits.push(pivotsArr[j]);
           pivotsArr[i].recentHitsCount = pivotsArr[i].recentHits.length;
+          // If the volume is lower on any of the prior recent pivots, add a recentHitOnLowerVolume.
+          if (pivotsArr[j]["v"] > pivotsArr[i]["v"]) {
+            pivotsArr[i].recentHitsOnLowerVolume.push(pivotsArr[j]);
+            pivotsArr[i].recentHitsOnLowerVolumeCount = pivotsArr[i].recentHitsOnLowerVolume.length;
+          }
         }
       }
     }

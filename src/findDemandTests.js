@@ -20,6 +20,7 @@ function findDemandTests (pivots, ticker) {
           hitsCount: pivots[i].hitsCount,
           recentHits: pivots[i].recentHits,
           recentHitsCount: pivots[i].recentHitsCount,
+          recentHitsOnLowerVolumeCount: pivots[i].recentHitsOnLowerVolumeCount,
           data: pivots[i]
         };
         // ...and add signal object to our signals array.
