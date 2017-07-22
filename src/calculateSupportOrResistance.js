@@ -1,6 +1,6 @@
 let stockData = require("./stockData.js");
 
-// Used in findDemandTests and findSupplyTests.
+// Used in findTests.
 // Pass in the ticker, trade direction (sup/res) as string, and signal object in progress.
 // Counts prior pivot highs/lows within range, and stores them in an array on signal object.
 function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
@@ -29,7 +29,7 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
       p + (p * threshold),
     ];
     
-    // This is used to calculate the lookback period to find each pivot's recent prior hits.
+    // Calculates lookback period to find each pivot's recent prior hits.
     // Because the date calculation below is base 10, and needs to account for a month turnover, this lookback is one month (100), which is "20170701" - "20170601".
     let dayRange = 100; 
 
@@ -58,7 +58,7 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
       }
     }
 
-    // # DEBUG:    
+    // # DEBUG:
     // console.log("\n\n\n## current pivot day: " + pivotsArr[i].date);
     // console.log("\n## range from: " + range[0] + " to " + range[1] + ".");
     // console.log("\n## pivotsArr[i].hits", pivotsArr[i].hits);

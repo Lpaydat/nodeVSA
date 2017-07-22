@@ -1,7 +1,7 @@
 let stockData = require("./stockData.js");
 
 // Call this with the pivotLows array for a particular ticker to generate long signals.
-function findSupplyTests (pivots, ticker) {
+function findTests (direction, pivots, ticker) {
   // Init signals array if undefined.
   stockData.allSignals = stockData.allSignals || [];
 
@@ -15,7 +15,7 @@ function findSupplyTests (pivots, ticker) {
         let currentSignal = {
           date: pivots[i].date.split(' ')[0], // Removes the random timestamp.
           symbol: ticker,
-          trade: "long",
+          trade: direction,
           hits: pivots[i].hits,
           hitsCount: pivots[i].hitsCount,
           recentHits: pivots[i].recentHits,
@@ -29,4 +29,4 @@ function findSupplyTests (pivots, ticker) {
   }
 }
 
-module.exports = findSupplyTests;
+module.exports = findTests;
