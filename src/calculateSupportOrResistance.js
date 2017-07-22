@@ -30,8 +30,8 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
     ];
     
     // This is used to calculate the lookback period to find each pivot's recent prior hits.
-    // Because the date calculation below is base 10, and needs to account for a month turnover, this lookback is one month (100) + 30 days.
-    let dayRange = 130; 
+    // Because the date calculation below is base 10, and needs to account for a month turnover, this lookback is one month (100), which is "20170701" - "20170601".
+    let dayRange = 100; 
 
     // For each pivot j until this pivot i
     for (let j = 0; j < i; j++) {
@@ -46,11 +46,6 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
 
         // Capture more recent hits.
         // Removes dash from dates, then compares difference to see if most recent pivot is within day range.
-
-        // # DEBUG: see the date comparisons
-        // console.log("ith pivot date:", pivotsArr[i]["date"].replace(/-/g, ''));
-        // console.log("jth pivot date:", pivotsArr[j]["date"].replace(/-/g, ''));
-
         if (( pivotsArr[i]["date"].replace(/-/g, '') - pivotsArr[j]["date"].replace(/-/g, '') ) < dayRange) {
           pivotsArr[i].recentHits.push(pivotsArr[j]);
           pivotsArr[i].recentHitsCount = pivotsArr[i].recentHits.length;
@@ -63,7 +58,7 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
       }
     }
 
-    // # Debugging    
+    // # DEBUG:    
     // console.log("\n\n\n## current pivot day: " + pivotsArr[i].date);
     // console.log("\n## range from: " + range[0] + " to " + range[1] + ".");
     // console.log("\n## pivotsArr[i].hits", pivotsArr[i].hits);

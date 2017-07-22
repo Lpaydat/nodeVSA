@@ -46,11 +46,6 @@ function markPivots (daysArray, ticker) {
     }
   }
 
-  // # DEBUG: why are dates not sorted?
-  // stockData.quotes[ticker]["pivotLows"].map((p)=>{
-  //   console.log(p.date);
-  // });
-
   // Calculate prior support/resistance.
   // Adds hits and hitCount to each ticker day
   calculateSupportOrResistance(ticker, "support", stockData.quotes[ticker]["pivotLows"]);

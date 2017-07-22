@@ -24,7 +24,7 @@ A **pivot** is a day that has an outlying high or low:
 
 Pivots represent a short-term change in trading direction. nodeVSA detects pivots and scans for prior pivots close to the same price. 
 
-While it can be informative to see what the price has historically done at the current level overall, recent pivots (within the last 10 trading days) carry more weight.
+While it can be informative to see what the price has historically done at the current level overall, recent pivots carry more weight.
 
 You can detect when buying or selling pressure has been depleted by what happens to the trading volume as the price revisits a support/resistance level. If a stock price revisits a support/resistance level but on lower volume each time, this can signal that the stock is ready to change directions.
 

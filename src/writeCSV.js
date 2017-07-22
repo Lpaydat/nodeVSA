@@ -2,9 +2,7 @@ let fs = require("fs");
 
 function writeCSV (signalsArray) {
   // Create new file, overwrite existing old results.
-  fs.writeFile("results.csv", "", (err) => {
-    if (err) throw err;
-  });
+  fs.writeFileSync("results.csv", "", "utf8");
   fs.appendFileSync("results.csv", "symbol,date,trade,hits,recentHits,recentHitsOnLowerVolume\n", "utf8");
   for (let i = 0; i < signalsArray.length; i++) {
     let line = [ 
