@@ -9,15 +9,15 @@ function findTests (direction, pivots, ticker) {
   for (let i = 1; i < pivots.length; i++) { // Start @ 1 because else comparison gets undef.
     if (
         // pivots[i].recentHitsCount > 0
-        pivots[i].hitsCount > 0
+        pivots[i].priorHitsCount > 0
     ) {
       // Build a new signal object...
         let currentSignal = {
           date: pivots[i].date.split(' ')[0], // Removes the random timestamp.
           symbol: ticker,
           trade: direction,
-          hits: pivots[i].hits,
-          hitsCount: pivots[i].hitsCount,
+          priorHits: pivots[i].priorHits,
+          priorHitsCount: pivots[i].priorHitsCount,
           recentHits: pivots[i].recentHits,
           recentHitsCount: pivots[i].recentHitsCount,
           recentHitsOnLowerVolumeCount: pivots[i].recentHitsOnLowerVolumeCount,

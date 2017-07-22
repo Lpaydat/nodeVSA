@@ -3,13 +3,13 @@ let fs = require("fs");
 function writeCSV (signalsArray) {
   // Create new file, overwrite existing old results.
   fs.writeFileSync("results.csv", "", "utf8");
-  fs.appendFileSync("results.csv", "symbol,date,trade,hits,recentHits,recentHitsOnLowerVolume\n", "utf8");
+  fs.appendFileSync("results.csv", "symbol,date,trade,priorHits,recentHits,recentHitsOnLowerVolume\n", "utf8");
   for (let i = 0; i < signalsArray.length; i++) {
     let line = [ 
       signalsArray[i]["symbol"],
       signalsArray[i]["date"],
       signalsArray[i]["trade"],
-      signalsArray[i]["hitsCount"],
+      signalsArray[i]["priorHitsCount"],
       signalsArray[i]["recentHitsCount"],
       signalsArray[i]["recentHitsOnLowerVolumeCount"],
     ].join(",")

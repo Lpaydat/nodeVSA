@@ -15,8 +15,8 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
   // For each day of pivot data i in stockData.quotes[ticker][pivotArr]
   for (let i = 0; i < pivotsArr.length; i++) {
     
-    pivotsArr[i].hits = [];
-    pivotsArr[i].hitsCount = 0;
+    pivotsArr[i].priorHits = [];
+    pivotsArr[i].priorHitsCount = 0;
     pivotsArr[i].recentHits = [];
     pivotsArr[i].recentHitsCount = 0;
     pivotsArr[i].recentHitsOnLowerVolume = [];
@@ -41,8 +41,8 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
         (pivotsArr[j][pivot] <= range[1])
       ) {
         // Store array with pivot.
-        pivotsArr[i].hits.push(pivotsArr[j]);
-        pivotsArr[i].hitsCount = pivotsArr[i].hits.length;
+        pivotsArr[i].priorHits.push(pivotsArr[j]);
+        pivotsArr[i].priorHitsCount = pivotsArr[i].priorHits.length;
 
         // Capture more recent hits.
         // Removes dash from dates, then compares difference to see if most recent pivot is within day range.
