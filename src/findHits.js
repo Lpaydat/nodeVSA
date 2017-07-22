@@ -1,15 +1,16 @@
 let stockData = require("./stockData.js");
 
+// A 'hit' is a pivot within price range of the current pivot.
+// Finds all prior hits and stores them in an array on signal object.
 // Used in findTests.
 // Pass in the ticker, trade direction (sup/res) as string, and signal object in progress.
-// Counts prior pivot highs/lows within range, and stores them in an array on signal object.
-function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
-  if (supportOrResistance === "support") {
+function findHits (ticker, direction, pivotsArr) {
+  if (direction === "long") {
     var pivot = "l";
-  } else if (supportOrResistance === "resistance") {
+  } else if (direction === "short") {
     var pivot = "h"; 
   } else {
-    return console.error("Must specify 'support' or 'resistance'.");
+    return console.error("Must specify 'long' or 'short'.");
   }
 
   // For each day of pivot data i in stockData.quotes[ticker][pivotArr]
@@ -66,4 +67,4 @@ function calculateSupportOrResistance (ticker, supportOrResistance, pivotsArr) {
   }
 }
 
-module.exports = calculateSupportOrResistance;
+module.exports = findHits;

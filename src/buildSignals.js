@@ -1,7 +1,8 @@
 let stockData = require("./stockData.js");
 
+// Builds our signals objects, so we can search through them and write them to screen/disk.
 // Call this with the pivotLows array for a particular ticker to generate long signals.
-function findTests (direction, pivots, ticker) {
+function buildSignals (direction, pivots, ticker) {
   // Init signals array if undefined.
   stockData.allSignals = stockData.allSignals || [];
 
@@ -29,4 +30,4 @@ function findTests (direction, pivots, ticker) {
   }
 }
 
-module.exports = findTests;
+module.exports = buildSignals;

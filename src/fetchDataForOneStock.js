@@ -4,7 +4,7 @@ const RP = require("request-promise");
 let stockData = require("./stockData.js");
 let transformData = require("./transformData.js");
 let markPivots = require("./markPivots.js");
-let findTests = require("./findTests.js");
+let buildSignals = require("./buildSignals.js");
 
 // Requests data for one stock ticker with a promise.
 let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
@@ -32,8 +32,8 @@ let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
   })
   .then(() => {
     // Scan for tests.
-    findTests("long", stockData.quotes[ticker]["pivotLows"], ticker);
-    findTests("short", stockData.quotes[ticker]["pivotHighs"], ticker);
+    buildSignals("long", stockData.quotes[ticker]["pivotLows"], ticker);
+    buildSignals("short", stockData.quotes[ticker]["pivotHighs"], ticker);
     console.log("Got data for: ", "\x1b[34m", ticker, "\x1b[0m");
     resolve();
   })
