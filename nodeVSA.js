@@ -29,13 +29,12 @@
 */
 
 const TICKER_LIST = require("./stockList.js");
-
+const fetchDataForOneStock = require("./src/fetchDataForOneStock.js");
+const createThrottle = require("./src/createThrottle.js");
+const searchAllSignals = require("./src/searchAllSignals.js");
+const printResults = require("./src/printResults.js");
+const writeCSV = require("./src/writeCSV.js");
 let stockData = require("./src/stockData.js");
-let fetchDataForOneStock = require("./src/fetchDataForOneStock.js");
-let createThrottle = require("./src/createThrottle.js");
-let searchAllSignals = require("./src/searchAllSignals.js");
-let printResults = require("./src/printResults.js");
-let writeCSV = require("./src/writeCSV.js");
 
 // Main/Start:
 (function () {

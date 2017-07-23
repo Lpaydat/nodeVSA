@@ -21,7 +21,7 @@ function buildSignals (direction, pivots, ticker) {
           priorHitsCount: pivots[i].priorHitsCount,
           recentHits: pivots[i].recentHits,
           recentHitsCount: pivots[i].recentHitsCount,
-          recentHitsOnLowerVolumeCount: pivots[i].recentHitsOnLowerVolumeCount,
+          recentHitsOnDecreasingVolumeCount: pivots[i].recentHitsOnDecreasingVolumeCount,
           data: pivots[i]
         };
         // ...and add signal object to our signals array.

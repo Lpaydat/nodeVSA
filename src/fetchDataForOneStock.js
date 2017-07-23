@@ -1,10 +1,9 @@
 const CONFIG = require("../config.js")
 const RP = require("request-promise");
-
+const transformData = require("./transformData.js");
+const markPivots = require("./markPivots.js");
+const buildSignals = require("./buildSignals.js");
 let stockData = require("./stockData.js");
-let transformData = require("./transformData.js");
-let markPivots = require("./markPivots.js");
-let buildSignals = require("./buildSignals.js");
 
 // Requests data for one stock ticker with a promise.
 let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {

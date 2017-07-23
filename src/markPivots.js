@@ -1,5 +1,5 @@
+const findHits = require("./findHits.js");
 let stockData = require("./stockData.js");
-let findHits = require("./findHits.js");
 
 function markPivots (daysArray, ticker) {
   // Init pivotHighs and pivotLows arrays if undefined.
@@ -46,7 +46,6 @@ function markPivots (daysArray, ticker) {
     }
   }
 
-  // Calculate prior support/resistance.
   // Adds hits and hitCount to each ticker day
   findHits(ticker, "long", stockData.quotes[ticker]["pivotLows"]);
   findHits(ticker, "short", stockData.quotes[ticker]["pivotHighs"]);

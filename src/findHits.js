@@ -20,8 +20,9 @@ function findHits (ticker, direction, pivotsArr) {
     pivotsArr[i].priorHitsCount = 0;
     pivotsArr[i].recentHits = [];
     pivotsArr[i].recentHitsCount = 0;
-    pivotsArr[i].recentHitsOnLowerVolume = [];
-    pivotsArr[i].recentHitsOnLowerVolumeCount = 0;
+    pivotsArr[i].recentHitsOnDecreasingVolume = [];
+    pivotsArr[i].recentHitsOnDecreasingVolumeCount = 0;
+    pivotsArr[i].absorptionVolume = false;
 
     let threshold = 0.003;
     let p = pivotsArr[i][pivot];
@@ -50,10 +51,11 @@ function findHits (ticker, direction, pivotsArr) {
         if (( pivotsArr[i]["date"].replace(/-/g, '') - pivotsArr[j]["date"].replace(/-/g, '') ) < dayRange) {
           pivotsArr[i].recentHits.push(pivotsArr[j]);
           pivotsArr[i].recentHitsCount = pivotsArr[i].recentHits.length;
-          // If the volume is lower on any of the prior recent pivots, add a recentHitOnLowerVolume.
+
+          // If the volume is Decreasing on any of the prior recent pivots, add a recentHitOnDecreasingVolume.
           if (pivotsArr[j]["v"] > pivotsArr[i]["v"]) {
-            pivotsArr[i].recentHitsOnLowerVolume.push(pivotsArr[j]);
-            pivotsArr[i].recentHitsOnLowerVolumeCount = pivotsArr[i].recentHitsOnLowerVolume.length;
+            pivotsArr[i].recentHitsOnDecreasingVolume.push(pivotsArr[j]);
+            pivotsArr[i].recentHitsOnDecreasingVolumeCount = pivotsArr[i].recentHitsOnDecreasingVolume.length;
           }
         }
       }
