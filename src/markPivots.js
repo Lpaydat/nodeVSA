@@ -6,6 +6,7 @@ function markPivots (daysArray, ticker) {
   stockData.quotes[ticker]["pivotHighs"] = stockData.quotes[ticker]["pivotHighs"] || [];
   stockData.quotes[ticker]["pivotLows"] = stockData.quotes[ticker]["pivotLows"] || [];
 
+
   // Mark pivot Highs
   for (let i = 1; i < daysArray.length; i++) {
     if (daysArray[i+1] === undefined) { // handle most recent day
@@ -26,6 +27,8 @@ function markPivots (daysArray, ticker) {
       }
     }
   }
+
+
   // Mark pivot Lows
   for (let i = 1; i < daysArray.length; i++) {
     if (daysArray[i+1] === undefined) { // handle most recent day
@@ -45,6 +48,7 @@ function markPivots (daysArray, ticker) {
       }
     }
   }
+
 
   // Adds hits and hitCount to each ticker day
   findHits(ticker, "long", stockData.quotes[ticker]["pivotLows"]);

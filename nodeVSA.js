@@ -39,9 +39,11 @@ let stockData = require("./src/stockData.js");
 // Main/Start:
 (function () {
 
+
   // Adds rate-limiting per data source's request; < 200 requests per minute
   var throttle = createThrottle(2, 1e3); // # requests every second
   
+
   // Create an array containing a promise for each ticker request.
   let promisifiedTickerArray = TICKER_LIST.map(
     (ticker) => throttle().then(() => (
@@ -50,6 +52,7 @@ let stockData = require("./src/stockData.js");
     )
   );
   
+
   // Main logic.
   // Maps array of promisified requests to individual catch blocks, so if one request fails, it won't break the rest of the app.
   Promise.all(promisifiedTickerArray.map(p => p.catch(e => e)))
