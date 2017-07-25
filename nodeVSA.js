@@ -49,19 +49,25 @@ let data = require("./src/stockData.js");
   // Maps array of promisified requests to individual catch blocks, so if one fails the rest can continue.
   Promise.all(promisifiedTickers.map(p => p.catch(e => e)))
   .then(()=>{
-    console.log("\n" + "\x1b[31m" + "All ticker data retrieved." + "\x1b[0m" + "\n");
+    console.log("\n" + "\x1b[31m" + "Fetch complete." + "\x1b[0m" + "\n");
   })
-  .then(()=>{ // If command line search filter provided, use it.
+  .then(()=>{ 
     let results;
-    if (process.argv[2]) {
+    
+    if (process.argv[2]) { // Use search filter if provided.
       let searchFilter = process.argv[2];
       results = SEARCH_SIGNALS(searchFilter);
-      console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m" + "\n");
     } else {
       results = data.allSignals;
       console.log("\n" + "\x1b[31m" + "No search filter provided. All results: " + "\x1b[0m" + "\n");
     }
-    PRINT_RESULTS(results); // Log results to screen.
-    WRITE_CSV(results); // Write results to file.
+
+    if (results.length) {
+      console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m" + "\n");
+      PRINT_RESULTS(results); // Log results to screen.
+      WRITE_CSV(results); // Write results to file.
+    } else {
+      console.log("\n" + "\x1b[31m" + "No results." + "\x1b[0m" + "\n");
+    }
   })
 })();

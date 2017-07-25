@@ -39,8 +39,9 @@ function findHits (ticker, direction, pivotsArr) {
     ];
 
     
-    // Calculates lookback period to find each pivot's recent prior hits.
-    // Because the date calculation below is base 10, and needs to account for a month turnover, this lookback is one month (100), which is "20170701" - "20170601".
+    // Calculate lookback period to find each pivot's recent prior hits.
+    // Date calculation below is base 10, lookback is one month (100), which is "20170701" - "20170601".
+    // TODO: this is going to break every January, until February.
     let dayRange = 100; 
 
 
