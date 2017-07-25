@@ -1,16 +1,14 @@
-let stockData = require("./stockData.js");
+let data = require("./stockData.js");
 
-// A 'hit' is a pivot within price range of the current pivot.
-// Finds all prior hits and stores them in an array on signal object.
-// Used in findTests.
-// Pass in the ticker, trade direction (sup/res) as string, and signal object in progress.
+// A 'hit' is a pivot near the same price range as the current pivot.
+// Finds and stores all prior hits, recent hits, and recent hits on decreasing volume.
+// Pass the ticker, trade direction as string, and array of pivots to work on.
 function findHits (ticker, direction, pivotsArr) {
-
-
+  let pivot;
   if (direction === "long") {
-    var pivot = "l";
+    pivot = "l";
   } else if (direction === "short") {
-    var pivot = "h"; 
+    pivot = "h"; 
   } else {
     return console.error("Must specify 'long' or 'short'.");
   }
@@ -18,10 +16,10 @@ function findHits (ticker, direction, pivotsArr) {
 
   // Calculate average volume.
   // Used to detect absorption volume.
-  let avgVolume = stockData.quotes[ticker].data.map(day => day.v).reduce((a,b)=>{ return a + b;})/stockData.quotes[ticker].data.length;
+  let avgVolume = data.quotes[ticker].data.map(day => day.v).reduce((a,b)=>{ return a + b;})/data.quotes[ticker].data.length;
 
 
-  // For each day of pivot data i in stockData.quotes[ticker][pivotArr]
+  // For each day of pivot data i in data.quotes[ticker][pivotArr]
   for (let i = 0; i < pivotsArr.length; i++) {
     
     pivotsArr[i].priorHits = [];

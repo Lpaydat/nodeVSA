@@ -29,52 +29,39 @@
 */
 
 const TICKER_LIST = require("./stockList.js");
-const fetchDataForOneStock = require("./src/fetchDataForOneStock.js");
-const createThrottle = require("./src/createThrottle.js");
-const searchAllSignals = require("./src/searchAllSignals.js");
-const printResults = require("./src/printResults.js");
-const writeCSV = require("./src/writeCSV.js");
-let stockData = require("./src/stockData.js");
+const FETCH_ONE_STOCK = require("./src/fetchDataForOneStock.js");
+const CREATE_THROTTLE = require("./src/createThrottle.js");
+const SEARCH_SIGNALS = require("./src/searchAllSignals.js");
+const PRINT_RESULTS = require("./src/printResults.js");
+const WRITE_CSV = require("./src/writeCSV.js");
+let data = require("./src/stockData.js");
 
-// Main/Start:
 (function () {
 
-
-  // Adds rate-limiting per data source's request; < 200 requests per minute
-  var throttle = createThrottle(2, 1e3); // # requests every second
-  
+  let throttle = CREATE_THROTTLE(1, 1000);
 
   // Create an array containing a promise for each ticker request.
-  let promisifiedTickerArray = TICKER_LIST.map(
-    (ticker) => throttle().then(() => (
-      fetchDataForOneStock(ticker)
-      )
-    )
+  // Adds rate-limiting per data source's request; < 200 requests per minute
+  let promisifiedTickers = TICKER_LIST.map(
+    (ticker) => throttle().then( () => FETCH_ONE_STOCK(ticker) )
   );
   
-
-  // Main logic.
-  // Maps array of promisified requests to individual catch blocks, so if one request fails, it won't break the rest of the app.
-  Promise.all(promisifiedTickerArray.map(p => p.catch(e => e)))
+  // Maps array of promisified requests to individual catch blocks, so if one fails the rest can continue.
+  Promise.all(promisifiedTickers.map(p => p.catch(e => e)))
   .then(()=>{
     console.log("\n" + "\x1b[31m" + "All ticker data retrieved." + "\x1b[0m" + "\n");
   })
-  .then(()=>{
+  .then(()=>{ // If command line search filter provided, use it.
     let results;
-    // Use command line line search criteria if given.
     if (process.argv[2]) {
-      
       let searchFilter = process.argv[2];
-      results = searchAllSignals(searchFilter);
+      results = SEARCH_SIGNALS(searchFilter);
       console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m" + "\n");
-
     } else {
-      
-      results = stockData.allSignals;
+      results = data.allSignals;
       console.log("\n" + "\x1b[31m" + "No search filter provided. All results: " + "\x1b[0m" + "\n");
-    
     }
-    printResults(results);
-    writeCSV(results);
+    PRINT_RESULTS(results); // Log results to screen.
+    WRITE_CSV(results); // Write results to file.
   })
 })();

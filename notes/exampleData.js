@@ -27,7 +27,7 @@
 
 
 
-let stockData = {
+let data = {
   signals: [
     {
       date: "06-27-17",
@@ -36,7 +36,10 @@ let stockData = {
       hits: [{}, {}, {}],
       recentHitsCount: 3,
       recentHits: [{}, {}, {}],
-      direction: "long"
+      recentHitsOnDecreasingVolumeCount: 3,
+      recentHitsOnDecreasingVolume: [{}, {}, {}],
+      direction: "long",
+      absorptionVolume: true
     },
     {
       date: "06-25-17",
@@ -45,7 +48,10 @@ let stockData = {
       hits: [{}, {}],
       recentHitsCount: 1,
       recentHits: [{}],
-      direction: "short"
+      recentHitsOnDecreasingVolumeCount: 1,
+      recentHitsOnDecreasingVolume: [{}],
+      direction: "short",
+      absorptionVolume: true
     }
   ],
   // We also store the complete data per each stock.

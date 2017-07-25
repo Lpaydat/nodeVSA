@@ -1,15 +1,17 @@
 const CONFIG = require("../config.js")
 const RP = require("request-promise");
-const transformData = require("./transformData.js");
-const markPivots = require("./markPivots.js");
-const buildSignals = require("./buildSignals.js");
-let stockData = require("./stockData.js");
+const TRANSFORM_DATA = require("./transformData.js");
+const MARK_PIVOTS = require("./markPivots.js");
+const FIND_HITS = require("./findHits.js");
+const BUILD_SIGNALS = require("./buildSignals.js");
+let data = require("./stockData.js");
 
 // Requests data for one stock ticker with a promise.
 let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
+  
+  console.log("Getting: ", "\x1b[34m", ticker, "\x1b[0m");
 
-  console.log("Getting data for: ", "\x1b[34m", ticker, "\x1b[0m");
-  RP({
+  RP({ // Request data for this stock.
     uri: "https://www.alphavantage.co/query",
     json: true,
     qs: {
@@ -17,26 +19,26 @@ let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
       function: "TIME_SERIES_DAILY",
       symbol: ticker
     },
-    transform: transformData
+    transform: TRANSFORM_DATA // Clean raw data.
   })
-  // Add our transformed data to a container in storage.
-  .then((data) => {
-    // Initialize a new container for this stock.
-    stockData.quotes[ticker] = {};
-    stockData.quotes[ticker]["data"] = data;
+  .then((transformedData) => { // Store clean data for this stock.
+    data.quotes[ticker] = {};
+    data.quotes[ticker]["data"] = transformedData;
   })
-  // Mark pivots.
-  .then(() => {
-    markPivots(stockData.quotes[ticker]["data"], ticker);
+  .then(() => { // Mark pivot highs and lows.
+    MARK_PIVOTS(data.quotes[ticker]["data"], ticker);
   })
-  .then(() => {
-    // Scan for tests.
-    buildSignals("long", stockData.quotes[ticker]["pivotLows"], ticker);
-    buildSignals("short", stockData.quotes[ticker]["pivotHighs"], ticker);
-    console.log("Got data for: ", "\x1b[34m", ticker, "\x1b[0m");
+  .then(() => { // Scan each pivot for prior pivots in range, decreasing volume, and absorption volume.
+    FIND_HITS(ticker, "long", data.quotes[ticker]["pivotLows"]);
+    FIND_HITS(ticker, "short", data.quotes[ticker]["pivotHighs"]);
+  })
+  .then(() => { // Build our buy/sell signal objects.
+    BUILD_SIGNALS("long", data.quotes[ticker]["pivotLows"], ticker);
+    BUILD_SIGNALS("short", data.quotes[ticker]["pivotHighs"], ticker);
+    console.log("Got: ", "\x1b[34m", ticker, "\x1b[0m");
     resolve();
   })
-  .catch((err) => {
+  .catch((err) => { // Tell user if something went wrong.
     console.error("\n" + "\x1b[31m" + "Ticker: " + ticker + "\n" + "Error: " + "\x1b[0m" + "\n" + err);
     reject(err);
   })

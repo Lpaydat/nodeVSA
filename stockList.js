@@ -17,7 +17,6 @@ module.exports = [
   "AG",
   "AGN",
   "AIG",
-  "AKRX",
   "ALXN",
   "AMGN",
   "AMT",
@@ -393,6 +392,6 @@ module.exports = [
   "AMLP",
   "ING",
   "RH",
-  "VIA-B",
+  "VIAB",
   "XLP"
 ];
