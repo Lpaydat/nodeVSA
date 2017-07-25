@@ -49,7 +49,7 @@ let data = require("./src/stockData.js");
   // Maps array of promisified requests to individual catch blocks, so if one fails the rest can continue.
   Promise.all(promisifiedTickers.map(p => p.catch(e => e)))
   .then(()=>{
-    console.log("\n" + "\x1b[31m" + "Fetch complete." + "\x1b[0m" + "\n");
+    console.log("\n" + "\x1b[31m" + "Fetch complete." + "\x1b[0m");
   })
   .then(()=>{ 
     let results;
@@ -63,11 +63,11 @@ let data = require("./src/stockData.js");
     }
 
     if (results.length) {
-      console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m" + "\n");
+      console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m");
       PRINT_RESULTS(results); // Log results to screen.
       WRITE_CSV(results); // Write results to file.
     } else {
-      console.log("\n" + "\x1b[31m" + "No results." + "\x1b[0m" + "\n");
+      console.log("\n" + "\x1b[31m" + "No results." + "\x1b[0m");
     }
   })
 })();
