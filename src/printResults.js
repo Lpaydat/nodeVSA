@@ -1,6 +1,8 @@
+const LOG = console.log;
+
 function printResults (arr) {
 
-  console.log(
+  LOG(
     "symbol | " + 
     "date | " + 
     "trade | " + 
@@ -11,7 +13,7 @@ function printResults (arr) {
   );
 
   for (let i = 0; i < arr.length; i++) {
-    console.log(
+    LOG(
       `${arr[i].symbol} | ` +
       `${arr[i].date} | ` +
       `${arr[i].trade} | ` +

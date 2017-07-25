@@ -4,12 +4,13 @@ const TRANSFORM_DATA = require("./transformData.js");
 const MARK_PIVOTS = require("./markPivots.js");
 const FIND_HITS = require("./findHits.js");
 const BUILD_SIGNALS = require("./buildSignals.js");
+const LOG = console.log;
 let data = require("./stockData.js");
 
 // Requests data for one stock ticker with a promise.
 let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
   
-  console.log("Getting: ", "\x1b[34m", ticker, "\x1b[0m");
+  LOG("Getting: ", "\x1b[34m", ticker, "\x1b[0m");
 
   RP({ // Request data for this stock.
     uri: "https://www.alphavantage.co/query",
@@ -35,11 +36,11 @@ let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
   .then(() => { // Build our buy/sell signal objects.
     BUILD_SIGNALS("long", data.quotes[ticker]["pivotLows"], ticker);
     BUILD_SIGNALS("short", data.quotes[ticker]["pivotHighs"], ticker);
-    console.log("Got: ", "\x1b[34m", ticker, "\x1b[0m");
+    LOG("Got: ", "\x1b[34m", ticker, "\x1b[0m");
     resolve();
   })
   .catch((err) => { // Tell user if something went wrong.
-    console.error("\n" + "\x1b[31m" + "Ticker: " + ticker + "\n" + "Error: " + "\x1b[0m" + "\n" + err);
+    LOG("\n" + "\x1b[31m" + "Ticker: " + ticker + "\n" + "Error: " + "\x1b[0m" + "\n" + err);
     // Add ticker to retry list.
     data.retryTickers.push(ticker);
     reject(err);

@@ -1,4 +1,5 @@
 const FS = require("fs");
+const LOG = console.log;
 
 function writeCSV (signalsArray) {
   // Create new file, overwrite existing old results.
@@ -18,7 +19,7 @@ function writeCSV (signalsArray) {
       if (err) throw err;
     });
   }
-  console.log("\n\nCSV results written to disk."); 
+  LOG("\n\nCSV results written to disk."); 
 }
 
 module.exports = writeCSV;
