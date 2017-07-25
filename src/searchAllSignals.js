@@ -15,6 +15,7 @@ function searchAllSignals (filter) {
       return eval(eval(filter));
     });
   }
+  return [];
 };
 
 module.exports = searchAllSignals;
