@@ -15,7 +15,10 @@ function searchAllSignals (filter) {
       return eval(eval(filter));
     });
   }
-  return [];
+  // Return results..
+  return searchResults || [];
 };
 
 module.exports = searchAllSignals;
+
+
