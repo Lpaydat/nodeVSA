@@ -40,6 +40,8 @@ let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
   })
   .catch((err) => { // Tell user if something went wrong.
     console.error("\n" + "\x1b[31m" + "Ticker: " + ticker + "\n" + "Error: " + "\x1b[0m" + "\n" + err);
+    // Add ticker to retry list.
+    data.retryTickers.push(ticker);
     reject(err);
   })
 }); 

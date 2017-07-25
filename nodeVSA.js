@@ -34,6 +34,7 @@ const CREATE_THROTTLE = require("./src/createThrottle.js");
 const SEARCH_SIGNALS = require("./src/searchAllSignals.js");
 const PRINT_RESULTS = require("./src/printResults.js");
 const WRITE_CSV = require("./src/writeCSV.js");
+const LOG = console.log;
 let data = require("./src/stockData.js");
 
 (function () {
@@ -46,10 +47,12 @@ let data = require("./src/stockData.js");
     (ticker) => throttle().then( () => FETCH_ONE_STOCK(ticker) )
   );
   
+  data.retryTickers = [];
+
   // Maps array of promisified requests to individual catch blocks, so if one fails the rest can continue.
-  Promise.all(promisifiedTickers.map(p => p.catch(e => e)))
+  Promise.all(promisifiedTickers.map(p => p.catch(e => e )))
   .then(()=>{
-    console.log("\n" + "\x1b[31m" + "Fetch complete." + "\x1b[0m");
+    LOG("\n" + "\x1b[31m" + "Fetch complete." + "\x1b[0m");
   })
   .then(()=>{ 
     let results;
@@ -59,15 +62,16 @@ let data = require("./src/stockData.js");
       results = SEARCH_SIGNALS(searchFilter);
     } else {
       results = data.allSignals;
-      console.log("\n" + "\x1b[31m" + "No search filter provided. All results: " + "\x1b[0m" + "\n");
+      LOG("\n" + "\x1b[31m" + "No search filter provided. All results: " + "\x1b[0m" + "\n");
     }
 
     if (results.length) {
-      console.log("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m");
+      LOG("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m");
       PRINT_RESULTS(results); // Log results to screen.
       WRITE_CSV(results); // Write results to file.
     } else {
-      console.log("\n" + "\x1b[31m" + "No results." + "\x1b[0m");
+      LOG("\n" + "\x1b[31m" + "No results." + "\x1b[0m");
     }
+    LOG("retryTickers", data.retryTickers);
   })
 })();
