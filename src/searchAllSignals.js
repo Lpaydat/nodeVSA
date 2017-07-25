@@ -15,14 +15,6 @@ function searchAllSignals (filter) {
       return eval(eval(filter));
     });
   }
-
-  // Return results..
-  if (searchResults.length === data.allSignals.length) {
-    return console.log("\n" + "\x1b[31m" + "No search results found." + "\x1b[0m" + "\n");
-  } else {
-    return searchResults;
-  }
-
 };
 
 module.exports = searchAllSignals;
