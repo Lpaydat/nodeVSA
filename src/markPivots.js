@@ -5,6 +5,14 @@ function markPivots (daysArray, ticker) {
   data.quotes[ticker]["pivotHighs"] = data.quotes[ticker]["pivotHighs"] || [];
   data.quotes[ticker]["pivotLows"] = data.quotes[ticker]["pivotLows"] || [];
 
+  // Calculate a 14-day volume average for each day.
+  for (let i = 14; i < daysArray.length; i++) {
+    let last14Days = daysArray.slice(i-14, i);
+    let avgVol = last14Days.map(day => day.v).reduce((a,b)=>{ return a + b; })/14;
+    // console.log(avgVol);
+    daysArray[i].averageVol = parseInt(avgVol);
+  }
+
   // Mark pivot highs.
   for (let i = 1; i < daysArray.length; i++) {
     if (daysArray[i+1] === undefined) { // Mark most recent day as pivot high.

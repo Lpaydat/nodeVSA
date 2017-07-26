@@ -14,14 +14,15 @@ function findHits (ticker, direction, pivotsArr) {
   }
 
 
-  // Calculate average volume.
+  // Calculate average volume over last 14 days.
   // Used to detect absorption volume.
   let avgVolume = data.quotes[ticker].data.map(day => day.v).reduce((a,b)=>{ return a + b;})/data.quotes[ticker].data.length;
 
 
   // For each day of pivot data i in data.quotes[ticker][pivotArr]
   for (let i = 0; i < pivotsArr.length; i++) {
-    
+
+    // Init values.
     pivotsArr[i].priorHits = [];
     pivotsArr[i].priorHitsCount = 0;
     pivotsArr[i].recentHits = [];
@@ -32,7 +33,7 @@ function findHits (ticker, direction, pivotsArr) {
     pivotsArr[i].allRecentHitsDecreasing = false;
     pivotsArr[i].belowAvgVol = false;
 
-
+    // Calculate hit threshold.
     let threshold = 0.003;
     let p = pivotsArr[i][pivot];
     let range = [
@@ -40,7 +41,7 @@ function findHits (ticker, direction, pivotsArr) {
       p + (p * threshold),
     ];
 
-    
+
     // Calculate lookback period to find each pivot's recent prior hits.
     // Date calculation below is base 10, lookback is one month (100), which is "20170701" - "20170601".
     // TODO: this is going to break every January, until February.
@@ -105,10 +106,14 @@ function findHits (ticker, direction, pivotsArr) {
       pivotsArr[i].allRecentHitsDecreasing = allDecreasingSoFar;
     }
 
+
     // Determine if this pivot has below average volume
-    if (pivotsArr[i]["v"] < avgVolume) {
-      belowAvgVol = true;
+    if (pivotsArr[i]["v"] < pivotsArr[i]["averageVol"]) {
+      pivotsArr[i].belowAvgVol = true;
     }
+
+    console.log(pivotsArr[i]);
+
   }
 }
 
