@@ -86,7 +86,7 @@ function findHits (ticker, direction, pivotsArr) {
     // Determine if any recent hit shows absorption volume.
     for (let k = 0; k < pivotsArr[i].recentHits.length; k++) {
       // If any of the recent hits have volume greater than X times the average, mark true.
-      if (pivotsArr[i].recentHits[k]["v"] > avgVolume * 1.2) {
+      if (pivotsArr[i].recentHits[k]["v"] > pivotsArr[i]["averageVol"] * 1.2) {
         pivotsArr[i].absorptionVolume = true;
       }
     }
