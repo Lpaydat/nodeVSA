@@ -24,7 +24,7 @@ function printResults (arr) {
       `${arr[i].recentHitsOnGreaterVolumeCount} | ` +
       `${arr[i].absorptionVolume} | ` +
       `${arr[i].allRecentHitsDecreasing} | ` +
-      `${arr[i].belowAvgVol} | ` 
+      `${arr[i].belowAvgVol}` 
     );
   }
 

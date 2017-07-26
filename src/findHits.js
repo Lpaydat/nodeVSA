@@ -61,7 +61,7 @@ function findHits (ticker, direction, pivotsArr) {
 
 
         // Capture more recent hits.
-        // Removes dash from dates, then compares difference to see if most recent pivot is within day range.
+        // Removes dash from dates, then compares difference to check if within range.
         if (( pivotsArr[i]["date"].replace(/-/g, '') - pivotsArr[j]["date"].replace(/-/g, '') ) < dayRange) {
           pivotsArr[i].recentHits.push(pivotsArr[j]);
           pivotsArr[i].recentHitsCount = pivotsArr[i].recentHits.length;
@@ -75,12 +75,6 @@ function findHits (ticker, direction, pivotsArr) {
         }
       }
     }
-
-    // # DEBUG:
-    // console.log("\n\n\n## current pivot day: " + pivotsArr[i].date);
-    // console.log("\n## range from: " + range[0] + " to " + range[1] + ".");
-    // console.log("\n## pivotsArr[i].hits", pivotsArr[i].hits);
-
 
 
     // Determine if any recent hit shows absorption volume.
@@ -107,12 +101,11 @@ function findHits (ticker, direction, pivotsArr) {
     }
 
 
-    // Determine if this pivot has below average volume
+    // Determine if this pivot has below average volume.
     if (pivotsArr[i]["v"] < pivotsArr[i]["averageVol"]) {
       pivotsArr[i].belowAvgVol = true;
     }
 
-    console.log(pivotsArr[i]);
 
   }
 }

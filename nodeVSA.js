@@ -35,24 +35,35 @@ const SEARCH_SIGNALS = require("./src/searchAllSignals.js");
 const PRINT_RESULTS = require("./src/printResults.js");
 const WRITE_CSV = require("./src/writeCSV.js");
 const LOG = console.log;
+const THROTTLE = CREATE_THROTTLE(10, 500);
 let data = require("./src/stockData.js");
 
 (function () {
 
-  let throttle = CREATE_THROTTLE(1, 1000);
-
   // Create an array containing a promise for each ticker request.
   // Adds rate-limiting per data source's request; < 200 requests per minute
   let promisifiedTickers = TICKER_LIST.map(
-    (ticker) => throttle().then( () => FETCH_ONE_STOCK(ticker) )
+    (ticker) => THROTTLE().then( () => FETCH_ONE_STOCK(ticker) )
   );
-  
+
   data.retryTickers = [];
 
   // Maps array of promisified requests to individual catch blocks, so if one fails the rest can continue.
   Promise.all(promisifiedTickers.map(p => p.catch(e => e )))
   .then(()=>{
     LOG("\n" + "\x1b[31m" + "Fetch complete." + "\x1b[0m");
+    LOG("retryTickers", data.retryTickers);
+  })
+  .then(()=>{
+    if (data.retryTickers.length) {
+      let promisifiedRetryTickers = data.retryTickers.map(
+        (ticker) => THROTTLE().then( () => FETCH_ONE_STOCK(ticker) )
+      );
+      return Promise.all(promisifiedRetryTickers);
+    }
+  })
+  .then(()=>{
+    LOG("\n" + "\x1b[31m" + "Retries complete." + "\x1b[0m");
   })
   .then(()=>{ 
     let results;
@@ -72,6 +83,6 @@ let data = require("./src/stockData.js");
     } else {
       LOG("\n" + "\x1b[31m" + "No results." + "\x1b[0m");
     }
-    LOG("retryTickers", data.retryTickers);
   })
+  .catch(e => e);
 })();

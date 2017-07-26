@@ -4,7 +4,7 @@ const LOG = console.log;
 function writeCSV (signalsArray) {
   // Create new file, overwrite existing old results.
   FS.writeFileSync("results.csv", "", "utf8");
-  FS.appendFileSync("results.csv", "symbol,date,trade,priorHits,recentHits,recentHitsOnGreaterVolume,absorptionVolume,allRecentHitsDecreasing\n", "utf8");
+  FS.appendFileSync("results.csv", "symbol,date,trade,priorHits,recentHits,recentHitsOnGreaterVolume,absorptionVolume,allRecentHitsDecreasing,belowAvgVol\n", "utf8");
   for (let i = 0; i < signalsArray.length; i++) {
     let line = [ 
       signalsArray[i]["symbol"],
