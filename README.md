@@ -77,7 +77,7 @@ The available search critera are:
 - `signal.symbol`: `'TSLA'`, etc.
 - `signal.hitsCount`: `> 0`, etc.
 - `signal.recentHitsCount`: `> 0`, etc.
-- `signal.recentHitsOnDecreasingVolumeCount`: `> 0`, etc.
+- `signal.recentHitsOnGreaterVolumeCount`: `> 0`, etc.
 
 For example, to show only results for long trades for Apple (AAPL), run:
 
@@ -101,8 +101,8 @@ The signal object looks like:
   hits: [{}, {}],
   recentHitsCount: 1,
   recentHits: [{}],
-  recentHitsOnDecreasingVolumeCount: 1,
-  recentHitsOnDecreasingVolume: [{}],
+  recentHitsOnGreaterVolumeCount: 1,
+  recentHitsOnGreaterVolume: [{}],
   direction: "short"
 }
 ~~~

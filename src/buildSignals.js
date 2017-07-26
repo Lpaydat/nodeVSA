@@ -18,8 +18,10 @@ function buildSignals (direction, pivotsArr, ticker) {
         priorHitsCount: pivotsArr[i].priorHitsCount,
         recentHits: pivotsArr[i].recentHits,
         recentHitsCount: pivotsArr[i].recentHitsCount,
-        recentHitsOnDecreasingVolumeCount: pivotsArr[i].recentHitsOnDecreasingVolumeCount,
+        recentHitsOnGreaterVolumeCount: pivotsArr[i].recentHitsOnGreaterVolumeCount,
         absorptionVolume: pivotsArr[i].absorptionVolume,
+        allRecentHitsDecreasing: pivotsArr[i].allRecentHitsDecreasing,
+        belowAvgVol: pivotsArr[i].belowAvgVol,
         data: pivotsArr[i]
       };
       data.allSignals.push(currentSignal);

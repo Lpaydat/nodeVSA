@@ -36,8 +36,8 @@ let data = {
       hits: [{}, {}, {}],
       recentHitsCount: 3,
       recentHits: [{}, {}, {}],
-      recentHitsOnDecreasingVolumeCount: 3,
-      recentHitsOnDecreasingVolume: [{}, {}, {}],
+      recentHitsOnGreaterVolumeCount: 3,
+      recentHitsOnGreaterVolume: [{}, {}, {}],
       direction: "long",
       absorptionVolume: true
     },
@@ -48,8 +48,8 @@ let data = {
       hits: [{}, {}],
       recentHitsCount: 1,
       recentHits: [{}],
-      recentHitsOnDecreasingVolumeCount: 1,
-      recentHitsOnDecreasingVolume: [{}],
+      recentHitsOnGreaterVolumeCount: 1,
+      recentHitsOnGreaterVolume: [{}],
       direction: "short",
       absorptionVolume: true
     }

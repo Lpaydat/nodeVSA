@@ -8,8 +8,10 @@ function printResults (arr) {
     "trade | " + 
     "priorHits | " + 
     "recentHits | " + 
-    "recentHitsOnDecreasingVolume | " + 
-    "absorptionVolume:"
+    "recentHitsOnGreaterVolume | " + 
+    "absorptionVolume | " +
+    "allRecentHitsDecreasing | " +
+    "belowAvgVol:"
   );
 
   for (let i = 0; i < arr.length; i++) {
@@ -17,10 +19,12 @@ function printResults (arr) {
       `${arr[i].symbol} | ` +
       `${arr[i].date} | ` +
       `${arr[i].trade} | ` +
-      `${arr[i].priorHitsCount} |` +
-      `${arr[i].recentHitsCount} |` +
-      `${arr[i].recentHitsOnDecreasingVolumeCount} |` +
-      `${arr[i].absorptionVolume}`
+      `${arr[i].priorHitsCount} | ` +
+      `${arr[i].recentHitsCount} | ` +
+      `${arr[i].recentHitsOnGreaterVolumeCount} | ` +
+      `${arr[i].absorptionVolume} | ` +
+      `${arr[i].allRecentHitsDecreasing} | ` +
+      `${arr[i].belowAvgVol} | ` 
     );
   }
 
