@@ -32,6 +32,7 @@ function findHits (ticker, direction, pivotsArr) {
     pivotsArr[i].absorptionVolume = false;
     pivotsArr[i].allRecentHitsDecreasing = false;
     pivotsArr[i].belowAvgVol = false;
+    pivotsArr[i].date = pivotsArr[i].date.split(' ')[0]; // Removes the random timestamp.
 
     // Calculate hit threshold.
     let threshold = 0.003;
@@ -106,7 +107,7 @@ function findHits (ticker, direction, pivotsArr) {
       pivotsArr[i].belowAvgVol = true;
     }
 
-
+    console.log(pivotsArr[i]);
   }
 }
 
