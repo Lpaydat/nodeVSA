@@ -92,7 +92,9 @@ function findHits (ticker, direction, pivotsArr) {
       let allDecreasingSoFar = false;
       // Set flag if all recentHitsOnGreaterVolume are decreasing.
       for (let l = 1; l < pivotsArr[i].recentHitsOnGreaterVolume.length; l++) {
-        if (pivotsArr[i].recentHitsOnGreaterVolume[l]["v"] <= pivotsArr[i].recentHitsOnGreaterVolume[l-1]["v"]) {
+        if (pivotsArr[i].recentHitsOnGreaterVolume[l]["v"] <= pivotsArr[i].recentHitsOnGreaterVolume[l-1]["v"] &&
+            pivotsArr[i].recentHitsOnGreaterVolume[l]["v"] > pivotsArr[i]["v"]
+          ) {
           allDecreasingSoFar = true;
         } else {
           allDecreasingSoFar = false;
@@ -107,7 +109,7 @@ function findHits (ticker, direction, pivotsArr) {
       pivotsArr[i].belowAvgVol = true;
     }
 
-    console.log(pivotsArr[i]);
+    // console.log(pivotsArr[i]);
   }
 }
 

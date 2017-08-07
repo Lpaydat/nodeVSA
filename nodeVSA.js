@@ -35,7 +35,7 @@ const SEARCH_SIGNALS = require("./src/searchAllSignals.js");
 const PRINT_RESULTS = require("./src/printResults.js");
 const WRITE_CSV = require("./src/writeCSV.js");
 const LOG = console.log;
-const THROTTLE = CREATE_THROTTLE(10, 3000);
+const THROTTLE = CREATE_THROTTLE(3, 1000);
 let data = require("./src/stockData.js");
 
 (function () {
