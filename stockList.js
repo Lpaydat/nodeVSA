@@ -123,8 +123,6 @@ module.exports = [
   "ETFC",
   "ETN",
   "EWA",
-  "EWC",
-  "EWG",
   "EWH",
   "EWJ",
   "EWT",
@@ -188,7 +186,6 @@ module.exports = [
   "ISBC",
   "ITB",
   "ITUB",
-  "IVV",
   "IWM",
   "IYR",
   "JBL",
@@ -301,7 +298,6 @@ module.exports = [
   "RIO",
   "ROST",
   "RRC",
-  "RSX",
   "S",
   "SBGI",
   "SBS",
@@ -355,7 +351,6 @@ module.exports = [
   "VEA",
   "VER",
   "VFC",
-  "VGK",
   "VIAV",
   "VIPS",
   "VLO",
@@ -377,7 +372,6 @@ module.exports = [
   "XLB",
   "XLE",
   "XLI",
-  "XLK",
   "XLNX",
   "XLV",
   "XLY",
@@ -392,6 +386,5 @@ module.exports = [
   "AMLP",
   "ING",
   "RH",
-  "VIAB",
-  "XLP"
+  "VIAB"
 ];

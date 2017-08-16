@@ -35,7 +35,7 @@ const SEARCH_SIGNALS = require("./src/searchAllSignals.js");
 const PRINT_RESULTS = require("./src/printResults.js");
 const WRITE_CSV = require("./src/writeCSV.js");
 const LOG = console.log;
-const THROTTLE = CREATE_THROTTLE(3, 1000);
+const THROTTLE = CREATE_THROTTLE(2, 1000);
 let data = require("./src/stockData.js");
 
 (function () {
@@ -78,8 +78,8 @@ let data = require("./src/stockData.js");
 
     if (results.length) {
       LOG("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m");
-      PRINT_RESULTS(results); // Log results to screen.
-      WRITE_CSV(results); // Write results to file.
+      PRINT_RESULTS(results);
+      WRITE_CSV(results);
     } else {
       LOG("\n" + "\x1b[31m" + "No results." + "\x1b[0m");
     }

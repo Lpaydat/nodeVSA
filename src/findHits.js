@@ -29,9 +29,9 @@ function findHits (ticker, direction, pivotsArr) {
     pivotsArr[i].recentHitsCount = 0;
     pivotsArr[i].recentHitsOnGreaterVolume = [];
     pivotsArr[i].recentHitsOnGreaterVolumeCount = 0;
-    pivotsArr[i].absorptionVolume = false;
-    pivotsArr[i].allRecentHitsDecreasing = false;
-    pivotsArr[i].belowAvgVol = false;
+    pivotsArr[i].absorptionVolume = null;
+    pivotsArr[i].allRecentHitsDecreasing = null;
+    pivotsArr[i].belowAvgVol = null;
     pivotsArr[i].date = pivotsArr[i].date.split(' ')[0]; // Removes the random timestamp.
 
     // Calculate hit threshold.
@@ -88,17 +88,23 @@ function findHits (ticker, direction, pivotsArr) {
 
     
     // Determine if all recent hits are decreasing in volume.
+    // Handle when there's more than one recent hit.
     if (pivotsArr[i].recentHitsOnGreaterVolume.length > 1) {
-      let allDecreasingSoFar = false;
+      let allDecreasingSoFar = true;
       // Set flag if all recentHitsOnGreaterVolume are decreasing.
       for (let l = 1; l < pivotsArr[i].recentHitsOnGreaterVolume.length; l++) {
-        if (pivotsArr[i].recentHitsOnGreaterVolume[l]["v"] <= pivotsArr[i].recentHitsOnGreaterVolume[l-1]["v"] &&
-            pivotsArr[i].recentHitsOnGreaterVolume[l]["v"] > pivotsArr[i]["v"]
+        if (!(pivotsArr[i].recentHitsOnGreaterVolume[l]["v"] <= pivotsArr[i].recentHitsOnGreaterVolume[l-1]["v"] &&
+            pivotsArr[i].recentHitsOnGreaterVolume[l]["v"] > pivotsArr[i]["v"])
           ) {
-          allDecreasingSoFar = true;
-        } else {
           allDecreasingSoFar = false;
         }
+      }
+      pivotsArr[i].allRecentHitsDecreasing = allDecreasingSoFar;
+    // Handle when there's exactly one recent hit.
+    } else if (pivotsArr[i].recentHitsOnGreaterVolume.length === 1) {
+      let allDecreasingSoFar = true;
+      if (!(pivotsArr[i].recentHitsOnGreaterVolume[0]["v"] > pivotsArr[i]["v"])) {
+        allDecreasingSoFar = false;
       }
       pivotsArr[i].allRecentHitsDecreasing = allDecreasingSoFar;
     }
