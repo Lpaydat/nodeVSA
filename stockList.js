@@ -332,7 +332,7 @@ module.exports = [
   "TSCO",
   "TSLA",
   "TSM",
-  "TSO",
+  // "TSO",
   "TTWO",
   "TWO",
   "TWX",

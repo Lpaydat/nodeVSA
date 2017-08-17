@@ -22,6 +22,8 @@ function printResults (arr) {
     return input;
   }
 
+  let long = 0, short = 0;
+
   for (let i = 0; i < arr.length; i++) {
     LOG(
       `${pad(arr[i].symbol, 6)} | ` +
@@ -34,8 +36,13 @@ function printResults (arr) {
       `${arr[i].allRecentHitsDecreasing} | ` +
       `${arr[i].belowAvgVol}` 
     );
+    
+    if (arr[i].trade === "long") long++;
+    if (arr[i].trade === "short") short++; 
   }
-
+  LOG("Long:", long);
+  LOG("Short:", short);
+  LOG("Long/Short Ratio:", long/short);
 }
 
 module.exports = printResults;
