@@ -67,7 +67,6 @@ let data = require("./src/stockData.js");
   })
   .then(()=>{ 
     let results;
-    
     if (process.argv[2]) { // Use search filter if provided.
       let searchFilter = process.argv[2];
       results = SEARCH_SIGNALS(searchFilter);
