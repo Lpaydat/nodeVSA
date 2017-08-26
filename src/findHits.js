@@ -16,6 +16,7 @@ function findHits (ticker, direction, pivotsArr) {
 
   // Calculate average volume over last 14 days.
   // Used to detect absorption volume.
+  console.log("#findHits# - data.quotes[ticker].data.map(day => day.v):", data.quotes[ticker].data.map(day => day.v));
   let avgVolume = data.quotes[ticker].data.map(day => day.v).reduce((a,b)=>{ return a + b;})/data.quotes[ticker].data.length;
 
 
