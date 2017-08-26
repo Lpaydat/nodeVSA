@@ -29,7 +29,7 @@ let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
   .then(() => { // Mark pivot highs and lows.
     MARK_PIVOTS(data.quotes[ticker]["data"], ticker);
   })
-  .then(() => { // Scan each pivot for prior pivots in range, decreasing volume, and absorption volume.
+  .then(() => { // Scan each pivot for prior pivots in range, decreasing volume, absorption volume, etc.
     FIND_HITS(ticker, "long", data.quotes[ticker]["pivotLows"]);
     FIND_HITS(ticker, "short", data.quotes[ticker]["pivotHighs"]);
   })

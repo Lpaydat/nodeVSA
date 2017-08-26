@@ -54,14 +54,18 @@ let data = require("./src/stockData.js");
     LOG("\n" + "\x1b[31m" + "Fetch complete." + "\x1b[0m");
     LOG("retryTickers", data.retryTickers);
   })
-  // .then(()=>{
-  //   if (data.retryTickers.length) {
-  //     let promisifiedRetryTickers = data.retryTickers.map(
-  //       (ticker) => THROTTLE().then( () => FETCH_ONE_STOCK(ticker) )
-  //     );
-  //     return Promise.all(promisifiedRetryTickers);
-  //   }
-  // })
+  .then(()=>{
+    if (data.retryTickers.length) {
+      let promisifiedRetryTickers = data.retryTickers.map(
+        // (ticker) => THROTTLE().then( () => FETCH_ONE_STOCK(ticker) )
+        function(ticker){
+          return FETCH_ONE_STOCK(ticker);
+        }
+      );
+      // Adds individual catch for each retry, and sets null value so rest can continue if retry also results in error.
+      return Promise.all(promisifiedRetryTickers.map(p => p.catch(err => null)));
+    }
+  })
   .then(()=>{
     LOG("\n" + "\x1b[31m" + "Retries complete." + "\x1b[0m");
   })
