@@ -2,18 +2,6 @@ const LOG = console.log;
 
 function printResults (arr) {
 
-  LOG(
-    "symbol | " + 
-    "date | " + 
-    "trade | " + 
-    "priorHits | " + 
-    "recentHits | " + 
-    "recentHitsOnGreaterVolume | " + 
-    "absorptionVolume | " +
-    "allRecentHitsDecreasing | " +
-    "belowAvgVol:"
-  );
-
   function pad (toPad, len) {
     let input = String(toPad);
     while (input.length < len) {
@@ -21,6 +9,21 @@ function printResults (arr) {
     }
     return input;
   }
+  
+  LOG(
+    "symbol | " + 
+    "date | " + 
+    "trade | " + 
+    "aph | " + 
+    "rh | " + 
+    "rhogv | " + 
+    "av | " +
+    "rhad | " +
+    "bav | " +
+    "oplv " + 
+    "oplvDate: "
+  );
+
 
   let long = 0, short = 0, weightedLong = 0, weightedShort = 0;
 
@@ -34,7 +37,9 @@ function printResults (arr) {
       `${arr[i].recentHitsOnGreaterVolumeCount} | ` +
       `${arr[i].absorptionVolume} | ` +
       `${arr[i].allRecentHitsDecreasing} | ` +
-      `${arr[i].belowAvgVol}` 
+      `${arr[i].belowAvgVol} | ` +
+      `${arr[i].outerPivotOnLowerVolume} | ` + 
+      `${arr[i].outerPivotOnLowerVolumeDate}`
     );
     
     if (arr[i].trade === "long") {
@@ -47,12 +52,12 @@ function printResults (arr) {
       short++; 
     }
   }
-  LOG("Long:", long);
-  LOG("Short:", short);
   LOG("Long/Short Ratio:", long/short);
+  LOG("Weighted ratio:", weightedLong/weightedShort);
   LOG("Weighted long:", weightedLong);
   LOG("Weighted short:", weightedShort);
-  LOG("Weighted ratio:", weightedLong/weightedShort);
+  LOG("Long:", long);
+  LOG("Short:", short);
 }
 
 module.exports = printResults;

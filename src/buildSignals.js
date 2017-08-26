@@ -22,7 +22,10 @@ function buildSignals (direction, pivotsArr, ticker) {
         absorptionVolume: pivotsArr[i].absorptionVolume,
         allRecentHitsDecreasing: pivotsArr[i].allRecentHitsDecreasing,
         belowAvgVol: pivotsArr[i].belowAvgVol,
-        data: pivotsArr[i]
+        data: pivotsArr[i],
+        outerPivotOnLowerVolume: pivotsArr[i].outerPivotOnLowerVolume,
+        outerPivotOnLowerVolumeDate: pivotsArr[i].outerPivotOnLowerVolumeDate,
+        tomorrowClose: pivotsArr[i].tomorrowClose
       };
       data.allSignals.push(currentSignal);
     }

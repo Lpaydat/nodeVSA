@@ -35,7 +35,7 @@ const SEARCH_SIGNALS = require("./src/searchAllSignals.js");
 const PRINT_RESULTS = require("./src/printResults.js");
 const WRITE_CSV = require("./src/writeCSV.js");
 const LOG = console.log;
-const THROTTLE = CREATE_THROTTLE(2, 1000);
+const THROTTLE = CREATE_THROTTLE(3, 1000);
 let data = require("./src/stockData.js");
 
 (function () {
@@ -54,14 +54,14 @@ let data = require("./src/stockData.js");
     LOG("\n" + "\x1b[31m" + "Fetch complete." + "\x1b[0m");
     LOG("retryTickers", data.retryTickers);
   })
-  .then(()=>{
-    if (data.retryTickers.length) {
-      let promisifiedRetryTickers = data.retryTickers.map(
-        (ticker) => THROTTLE().then( () => FETCH_ONE_STOCK(ticker) )
-      );
-      return Promise.all(promisifiedRetryTickers);
-    }
-  })
+  // .then(()=>{
+  //   if (data.retryTickers.length) {
+  //     let promisifiedRetryTickers = data.retryTickers.map(
+  //       (ticker) => THROTTLE().then( () => FETCH_ONE_STOCK(ticker) )
+  //     );
+  //     return Promise.all(promisifiedRetryTickers);
+  //   }
+  // })
   .then(()=>{
     LOG("\n" + "\x1b[31m" + "Retries complete." + "\x1b[0m");
   })

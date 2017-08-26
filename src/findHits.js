@@ -29,9 +29,10 @@ function findHits (ticker, direction, pivotsArr) {
     pivotsArr[i].recentHitsCount = 0;
     pivotsArr[i].recentHitsOnGreaterVolume = [];
     pivotsArr[i].recentHitsOnGreaterVolumeCount = 0;
-    pivotsArr[i].absorptionVolume = null;
+    pivotsArr[i].absorptionVolume = false;
     pivotsArr[i].allRecentHitsDecreasing = null;
-    pivotsArr[i].belowAvgVol = null;
+    pivotsArr[i].belowAvgVol = false;
+    pivotsArr[i].outerPivotOnLowerVolume = false;
     pivotsArr[i].date = pivotsArr[i].date.split(' ')[0]; // Removes the random timestamp.
 
     // Calculate hit threshold.
@@ -113,6 +114,40 @@ function findHits (ticker, direction, pivotsArr) {
     // Determine if this pivot has below average volume.
     if (pivotsArr[i]["v"] < pivotsArr[i]["averageVol"]) {
       pivotsArr[i].belowAvgVol = true;
+    }
+
+    // Determine if current pivot is an outer pivot on lower volume.
+    let len = pivotsArr[i].recentHits.length;
+    if (len) {
+      // console.log("current pivot:", pivotsArr[i]);
+      // console.log("prior pivot:", pivotsArr[i].recentHits[len-1]);
+      if (direction === "long") {
+        if ( (pivotsArr[i]["l"] < pivotsArr[i].recentHits[len-1]["l"]) && 
+             (pivotsArr[i]["v"] < pivotsArr[i].recentHits[len-1]["v"])
+          ) {
+          // console.log("this pivot:", pivotsArr[i]["date"]);
+          // console.log("current low:", pivotsArr[i]["l"]);
+          // console.log("current volume:", pivotsArr[i]["v"]);
+          // console.log("most recent pivot:", pivotsArr[i].recentHits[len-1]["date"]);
+          // console.log("most recent pivot's volume:", pivotsArr[i].recentHits[len-1]["v"]);
+          // console.log("most recent pivot's low:", pivotsArr[i].recentHits[len-1]["l"]);
+          pivotsArr[i].outerPivotOnLowerVolume = true;
+          pivotsArr[i].outerPivotOnLowerVolumeDate = pivotsArr[i].recentHits[len-1]["date"];
+        }
+      } else if (direction === "short") {
+        if ( (pivotsArr[i]["h"] > pivotsArr[i].recentHits[len-1]["h"]) && 
+             (pivotsArr[i]["v"] < pivotsArr[i].recentHits[len-1]["v"])
+          ) {
+          // console.log("this pivot:", pivotsArr[i]["date"]);
+          // console.log("current high:", pivotsArr[i]["h"]);
+          // console.log("current volume:", pivotsArr[i]["v"]);
+          // console.log("most recent pivot:", pivotsArr[i].recentHits[len-1]["date"]);
+          // console.log("most recent pivot's volume:", pivotsArr[i].recentHits[len-1]["v"]);
+          // console.log("most recent pivot's high:", pivotsArr[i].recentHits[len-1]["h"]);
+          pivotsArr[i].outerPivotOnLowerVolume = true;
+          pivotsArr[i].outerPivotOnLowerVolumeDate = pivotsArr[i].recentHits[len-1]["date"];
+        }
+      }
     }
 
     // console.log(pivotsArr[i]);

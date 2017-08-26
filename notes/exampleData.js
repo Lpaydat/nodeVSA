@@ -39,7 +39,8 @@ let data = {
       recentHitsOnGreaterVolumeCount: 3,
       recentHitsOnGreaterVolume: [{}, {}, {}],
       direction: "long",
-      absorptionVolume: true
+      absorptionVolume: true,
+      data: {} // ohlcv for the day of this signal
     },
     {
       date: "06-25-17",

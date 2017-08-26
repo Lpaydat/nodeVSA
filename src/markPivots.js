@@ -18,11 +18,15 @@ function markPivots (daysArray, ticker) {
     if (daysArray[i+1] === undefined) { // Mark most recent day as pivot high.
       if (daysArray[i].h > daysArray[i-1].h) {
         daysArray[i].pivotHigh = true;
+        // Extract next day close for analytics:
+        daysArray[i].tomorrowClose = "N/A";
         data.quotes[ticker]["pivotHighs"].push(daysArray[i]);
       }
     } else { // Mark all days with a pivot high and add to storage array.
       if (daysArray[i].h > daysArray[i-1].h && daysArray[i].h > daysArray[i+1].h) {
         daysArray[i].pivotHigh = true;
+        // Extract next day close for analytics:
+        daysArray[i].tomorrowClose = daysArray[i+1].c;
         data.quotes[ticker]["pivotHighs"].push(daysArray[i]);
       }
     }
@@ -33,11 +37,15 @@ function markPivots (daysArray, ticker) {
     if (daysArray[i+1] === undefined) { // Mark most recent day as pivot low.
       if (daysArray[i].l < daysArray[i-1].l) {
         daysArray[i].pivotLow = true;
+        // Extract next day close for analytics:
+        daysArray[i].tomorrowClose = "N/A";
         data.quotes[ticker]["pivotLows"].push(daysArray[i]);
       }
     } else { // Mark all days with a pivot high and add to storage array.
       if (daysArray[i].l < daysArray[i-1].l && daysArray[i].l < daysArray[i+1].l) { 
         daysArray[i].pivotLow = true;
+        // Extract next day close for analytics:
+        daysArray[i].tomorrowClose = daysArray[i+1].c;
         data.quotes[ticker]["pivotLows"].push(daysArray[i]);
       }
     }
