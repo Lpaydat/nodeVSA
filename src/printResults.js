@@ -20,7 +20,7 @@ function printResults (arr) {
     "av | " +
     "rhad | " +
     "bav | " +
-    "oplv " + 
+    "oplv | " + 
     "oplvDate: "
   );
 

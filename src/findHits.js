@@ -1,3 +1,4 @@
+const daysBetween = require("./daysBetween.js");
 let data = require("./stockData.js");
 
 // A 'hit' is a pivot near the same price range as the current pivot.
@@ -43,11 +44,8 @@ function findHits (ticker, direction, pivotsArr) {
     ];
 
 
-    // Calculate lookback period to find each pivot's recent prior hits.
-    // Date calculation below is base 10, lookback is one month (100), which is "20170701" - "20170601".
-    // TODO: this is going to break every January, until February. Integrate home-rolled daysSince function.
+    // Lookback period to find each pivot's recent prior hits.
     let dayRange = 100; 
-
 
     // For each pivot j until this pivot i
     for (let j = 0; j < i; j++) {
@@ -63,10 +61,10 @@ function findHits (ticker, direction, pivotsArr) {
 
         // Capture more recent hits.
         // Removes dash from dates, then compares difference to check if within range.
-        if (( pivotsArr[i]["date"].replace(/-/g, '') - pivotsArr[j]["date"].replace(/-/g, '') ) < dayRange) {
+        console.log( daysBetween(pivotsArr[j]["date"], pivotsArr[i]["date"]) );
+        if ( daysBetween(pivotsArr[j]["date"], pivotsArr[i]["date"]) < dayRange) {
           pivotsArr[i].recentHits.push(pivotsArr[j]);
           pivotsArr[i].recentHitsCount = pivotsArr[i].recentHits.length;
-
 
           // If the volume is Decreasing on any of the prior recent pivots, add to recentHitsOnGreaterVolume.
           if (pivotsArr[j]["v"] > pivotsArr[i]["v"]) {

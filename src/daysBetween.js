@@ -61,3 +61,5 @@ function daysBetween (startDate, endDate) {
   // Add 2 days to make start and end dates inclusive.
   return endTotal - startTotal + 2;
 }
+
+module.exports = daysBetween;
