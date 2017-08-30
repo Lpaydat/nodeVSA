@@ -1,6 +1,7 @@
 let data = require("./stockData.js");
 
 function markPivots (daysArray, ticker) {
+
   // Init storage arrays for pivots if undefined.
   data.quotes[ticker]["pivotHighs"] = data.quotes[ticker]["pivotHighs"] || [];
   data.quotes[ticker]["pivotLows"] = data.quotes[ticker]["pivotLows"] || [];

@@ -47,9 +47,9 @@ function findHits (ticker, direction, pivotsArr) {
     // Lookback period to find each pivot's recent prior hits.
     let dayRange = 100; 
 
-    // For each pivot j until this pivot i
+
+    // Get prior pivots j within range of current pivot i.
     for (let j = 0; j < i; j++) {
-      // If pivot on day j is within range of pivot on day i...
       if (
         (pivotsArr[j][pivot] >= range[0]) &&
         (pivotsArr[j][pivot] <= range[1])
@@ -57,48 +57,51 @@ function findHits (ticker, direction, pivotsArr) {
         // Store array with pivot.
         pivotsArr[i].priorHits.push(pivotsArr[j]);
         pivotsArr[i].priorHitsCount = pivotsArr[i].priorHits.length;
-
-
-        // Capture more recent hits.
-        // Removes dash from dates, then compares difference to check if within range.
-        console.log( daysBetween(pivotsArr[j]["date"], pivotsArr[i]["date"]) );
-        if ( daysBetween(pivotsArr[j]["date"], pivotsArr[i]["date"]) < dayRange) {
-          pivotsArr[i].recentHits.push(pivotsArr[j]);
-          pivotsArr[i].recentHitsCount = pivotsArr[i].recentHits.length;
-
-          // If the volume is Decreasing on any of the prior recent pivots, add to recentHitsOnGreaterVolume.
-          if (pivotsArr[j]["v"] > pivotsArr[i]["v"]) {
-            pivotsArr[i].recentHitsOnGreaterVolume.push(pivotsArr[j]);
-            pivotsArr[i].recentHitsOnGreaterVolumeCount = pivotsArr[i].recentHitsOnGreaterVolume.length;
-          }
-        }
       }
     }
 
+    // Get prior pivots k within day range of current pivot i.
+    for (let k = 0; k < pivotsArr[i].priorHits.length; k++) {
+      // Capture more recent hits.
+      // Removes dash from dates, then compares difference to check if within range.
+      if ( daysBetween(pivotsArr[i].priorHits[k]["date"], pivotsArr[i]["date"]) < dayRange) {
+        pivotsArr[i].recentHits.push(pivotsArr[i].priorHits[k]);
+        pivotsArr[i].recentHitsCount = pivotsArr[i].recentHits.length;
+      }
+    }
+
+    // Get all recent hits that have more volume than current pivot.
+    for (let l = 0; l < pivotsArr[i].recentHits.length; l++) {
+      // If the volume is Decreasing on any of the prior recent pivots, add to recentHitsOnGreaterVolume.
+      if (pivotsArr[i].recentHits[l]["v"] > pivotsArr[i]["v"]) {
+        pivotsArr[i].recentHitsOnGreaterVolume.push(pivotsArr[i].recentHits[l]);
+        pivotsArr[i].recentHitsOnGreaterVolumeCount = pivotsArr[i].recentHitsOnGreaterVolume.length;
+      }
+    }
 
     // Determine if any recent hit shows absorption volume.
-    for (let k = 0; k < pivotsArr[i].recentHits.length; k++) {
+    for (let m = 0; m < pivotsArr[i].recentHitsOnGreaterVolume.length; m++) {
       // If any of the recent hits have volume greater than X times the average, mark true.
-      if (pivotsArr[i].recentHits[k]["v"] > pivotsArr[i]["averageVol"] * 1.2) {
+      if (pivotsArr[i].recentHitsOnGreaterVolume[m]["v"] > pivotsArr[i]["averageVol"] * 1.2) {
         pivotsArr[i].absorptionVolume = true;
       }
     }
 
     
     // Determine if all recent hits are decreasing in volume.
-    // Handle when there's more than one recent hit.
+      // Handle when there's more than one recent hit.
     if (pivotsArr[i].recentHitsOnGreaterVolume.length > 1) {
       let allDecreasingSoFar = true;
       // Set flag if all recentHitsOnGreaterVolume are decreasing.
-      for (let l = 1; l < pivotsArr[i].recentHitsOnGreaterVolume.length; l++) {
-        if (!(pivotsArr[i].recentHitsOnGreaterVolume[l]["v"] <= pivotsArr[i].recentHitsOnGreaterVolume[l-1]["v"] &&
-            pivotsArr[i].recentHitsOnGreaterVolume[l]["v"] > pivotsArr[i]["v"])
+      for (let n = 1; n < pivotsArr[i].recentHitsOnGreaterVolume.length; n++) {
+        if (!(pivotsArr[i].recentHitsOnGreaterVolume[n]["v"] <= pivotsArr[i].recentHitsOnGreaterVolume[n-1]["v"] &&
+            pivotsArr[i].recentHitsOnGreaterVolume[n]["v"] > pivotsArr[i]["v"])
           ) {
           allDecreasingSoFar = false;
         }
       }
       pivotsArr[i].allRecentHitsDecreasing = allDecreasingSoFar;
-    // Handle when there's exactly one recent hit.
+      // Handle when there's exactly one recent hit.
     } else if (pivotsArr[i].recentHitsOnGreaterVolume.length === 1) {
       let allDecreasingSoFar = true;
       if (!(pivotsArr[i].recentHitsOnGreaterVolume[0]["v"] > pivotsArr[i]["v"])) {
@@ -108,7 +111,7 @@ function findHits (ticker, direction, pivotsArr) {
     }
 
 
-    // Determine if this pivot has below average volume.
+    // Determine if this current pivot has below average volume.
     if (pivotsArr[i]["v"] < pivotsArr[i]["averageVol"]) {
       pivotsArr[i].belowAvgVol = true;
     }

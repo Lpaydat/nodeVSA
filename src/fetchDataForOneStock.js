@@ -2,6 +2,7 @@ const CONFIG = require("../config.js")
 const RP = require("request-promise");
 const TRANSFORM_DATA = require("./transformData.js");
 const MARK_PIVOTS = require("./markPivots.js");
+const BUILD_HEATMAP = require("./buildHeatMap");
 const FIND_HITS = require("./findHits.js");
 const BUILD_SIGNALS = require("./buildSignals.js");
 const LOG = console.log;
@@ -28,6 +29,7 @@ let fetchDataForOneStock = (ticker) => new Promise((resolve, reject) => {
   })
   .then(() => { // Mark pivot highs and lows.
     MARK_PIVOTS(data.quotes[ticker]["data"], ticker);
+    BUILD_HEATMAP(ticker);
   })
   .then(() => { // Scan each pivot for prior pivots in range, decreasing volume, absorption volume, etc.
     FIND_HITS(ticker, "long", data.quotes[ticker]["pivotLows"]);
