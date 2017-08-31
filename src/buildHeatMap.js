@@ -1,3 +1,4 @@
+const FS = require("fs");
 let data = require("./stockData.js");
 
 
@@ -24,6 +25,22 @@ function buildHeatMap (ticker) {
     return entry[0] - nextEntry[0];
   })
   console.log(t["heatmap"]);
+
+
+  // Experimental; generates heatmap CSV data for visualization
+  // Create new file, overwrite existing old results.
+  // FS.writeFileSync("heatmap.csv", "", "utf8");
+  // FS.appendFileSync("heatmap.csv", "symbol,price,volume\n", "utf8");
+  // for (let j = 0; j < data.quotes[ticker]["heatmap"].length; j++) {
+  //   let line = [ 
+  //     ticker,
+  //     data.quotes[ticker]["heatmap"][j][0],
+  //     data.quotes[ticker]["heatmap"][j][1]
+  //   ].join(",")
+  //   FS.appendFile("heatmap.csv", line + "\n", "utf8", (err) => {
+  //     if (err) throw err;
+  //   });
+  // }
 }
 
 module.exports = buildHeatMap;
