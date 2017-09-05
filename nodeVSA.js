@@ -83,9 +83,30 @@ let data = require("./src/stockData.js");
       LOG("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m");
       PRINT_RESULTS(results);
       WRITE_CSV(results);
+
+      if (every(results, allResultsShort) || every(results, allResultsShort)) {
+        LOG("\n" + "\x1b[32m" + "All results agree. This has been a reliable signal about next trading day for the market" + "\x1b[0m");      }
+
     } else {
       LOG("\n" + "\x1b[31m" + "No results." + "\x1b[0m");
     }
   })
   .catch(e => e);
 })();
+
+
+function every (arr, filter) {
+  let result = true;
+  for (let i = 0; i < arr.length; i ++) {
+    if (filter(arr[i]) === false) {
+      result = false;
+    }
+  }
+  return result;
+}
+function allResultsShort (result) {
+  return result.trade === "short";
+}
+function allResultsLong (result) {
+  return result.trade === "long";
+}

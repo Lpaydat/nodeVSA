@@ -24,7 +24,7 @@ function buildHeatMap (ticker) {
   t["heatmap"].sort((entry, nextEntry) => {
     return entry[0] - nextEntry[0];
   })
-  console.log(t["heatmap"]);
+  // console.log(t["heatmap"]);
 
 
   // Experimental; generates heatmap CSV data for visualization
