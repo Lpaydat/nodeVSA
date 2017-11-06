@@ -9,7 +9,7 @@ function buildSignals (direction, pivotsArr, ticker) {
   // Find supply tests (long).
   for (let i = 1; i < pivotsArr.length; i++) { // Start @ 1 because else comparison gets undef.
     if (pivotsArr[i].priorHitsCount > 0) {
-      // Build and store new signal object...
+      // Build and store a new signal object...
       let currentSignal = {
         date: pivotsArr[i].date.split(' ')[0], // Removes the random timestamp.
         symbol: ticker,

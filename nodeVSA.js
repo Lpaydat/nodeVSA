@@ -34,8 +34,8 @@ const CREATE_THROTTLE = require("./src/createThrottle.js");
 const SEARCH_SIGNALS = require("./src/searchAllSignals.js");
 const PRINT_RESULTS = require("./src/printResults.js");
 const WRITE_CSV = require("./src/writeCSV.js");
-const LOG = console.log;
 const THROTTLE = CREATE_THROTTLE(1, 500);
+const LOG = console.log;
 let data = require("./src/stockData.js");
 
 (function () {
@@ -84,7 +84,7 @@ let data = require("./src/stockData.js");
       PRINT_RESULTS(results);
       WRITE_CSV(results);
 
-      if (every(results, allResultsShort) || every(results, allResultsShort)) {
+      if (every(results, allResultsShort) || every(results, allResultsLong)) {
         LOG("\n" + "\x1b[32m" + "All results agree. This has been a reliable signal about next trading day for the market" + "\x1b[0m");      }
 
     } else {
@@ -94,7 +94,7 @@ let data = require("./src/stockData.js");
   .catch(e => e);
 })();
 
-
+// Helpers
 function every (arr, filter) {
   let result = true;
   for (let i = 0; i < arr.length; i ++) {
