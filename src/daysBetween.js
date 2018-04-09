@@ -7,10 +7,10 @@
   
   Usually correct, occasionally 1 day off when compared to 
     https://www.timeanddate.com/date/durationresult.html
-  Suits my purposes well, but just be aware.
+    Suits my purposes well, but just be aware.
 */
 
-function daysBetween (startDate, endDate) {
+function daysBetween(startDate, endDate) {
   startDate = startDate.split("-"); // [2016,06,14]
   let start = {
     year : parseInt(startDate[0]), // 2016

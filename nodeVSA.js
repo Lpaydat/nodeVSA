@@ -20,82 +20,88 @@
     alphavantage.co's API @ https://www.alphavantage.co/documentation/
 
   Example URLs with query:
-    "https://www.alphavantage.co/query?function=HT_PHASOR&symbol=MSFT&interval=weekly&series_type=close&apikey=demo"
-    "https://www.alphavantage.co/query?&symbol=MSFT&interval=weekly&apikey=demo"
+    'https://www.alphavantage.co/query?function=HT_PHASOR&symbol=MSFT&interval=weekly&series_type=close&apikey=demo'
+    'https://www.alphavantage.co/query?&symbol=MSFT&interval=weekly&apikey=demo'
   
   Notes:
     Alpha Vantage requests a call frequency limit of < 200/minute.
     A batch of ~400 calls results in 503 Service Unavailable responses.
 */
 
-const TICKER_LIST = require("./stockList.js");
-const FETCH_ONE_STOCK = require("./src/fetchDataForOneStock.js");
-const CREATE_THROTTLE = require("./src/createThrottle.js");
-const SEARCH_SIGNALS = require("./src/searchAllSignals.js");
-const PRINT_RESULTS = require("./src/printResults.js");
-const WRITE_CSV = require("./src/writeCSV.js");
-const THROTTLE = CREATE_THROTTLE(1, 500);
-const LOG = console.log;
-let data = require("./src/stockData.js");
+const tickers = require('./stockList.js');
+const fetchStock = require('./src/fetchDataForOneStock.js');
+const createThrottle = require('./src/createThrottle.js');
+const filterResults = require('./src/filterResults.js');
+const printToScreen = require('./src/printResults.js');
+const writeToCsv = require('./src/writeCSV.js');
+const throttle = createThrottle(1, 1900);
+const log = console.log;
+let data = require('./src/stockData.js');
 
-(function () {
+// Date is passed in from command line in format 'YYYY-MM-DD'.
+// The filter string is evaluated in filterResults.js
+const filter = [
+  'signal.recentHitsOnGreaterVolumeCount === signal.recentHitsCount',
+  'signal.recentHitsCount > 0',
+  'signal.absorptionVolume === true',
+  'signal.belowAvgVol === true',
+  'signal.allRecentHitsDecreasing === true',
+  'signal.outerPivotOnLowerVolume === true',
+  'signal.date === process.argv[2]'
+].join(' && ');
 
+(function() {
   // Create an array containing a promise for each ticker request.
   // Adds rate-limiting per data source's request; < 200 requests per minute
-  let promisifiedTickers = TICKER_LIST.map(
-    (ticker) => THROTTLE().then( () => FETCH_ONE_STOCK(ticker) )
-  );
+  // Requests get individual catch blocks, so if one fails the rest can continue.
+  const tickerRequests = tickers.map(ticker => throttle().then(() => fetchStock(ticker)).catch(e => e));
 
-  data.retryTickers = [];
+  Promise.all(tickerRequests)
+    .then(()=>{
+      log(`\n\x1b[31m Fetch complete. \x1b[0m`);
+      log('Retries', data.retries);
+    })
+    .then(()=>{
+      if(data.retries.length) {
+        const retryRequests = data.retries.map(ticker => fetchStock(ticker));
+        // Adds individual catch for each retry, and sets null value so rest can continue if retry also results in error.
+        return Promise.all(retryRequests.map(p => p.catch(err => null)));
+      }
+    })
+    .then(()=>{
+      log('\n\x1b[31m' + 'Retries complete.' + '\x1b[0m');
+    })
+    .then(()=>{ 
+      
+      let results;
+      
+      if(process.argv[2]) {
+        results = filterResults(filter);
+      } 
+      else {
+        results = data.allSignals;
+        log('\n\x1b[31m' + 'No search filter provided. All results: ' + '\x1b[0m' + '\n');
+      }
 
-  // Maps array of promisified requests to individual catch blocks, so if one fails the rest can continue.
-  Promise.all(promisifiedTickers.map(p => p.catch(e => e )))
-  .then(()=>{
-    LOG("\n" + "\x1b[31m" + "Fetch complete." + "\x1b[0m");
-    LOG("retryTickers", data.retryTickers);
-  })
-  .then(()=>{
-    if (data.retryTickers.length) {
-      let promisifiedRetryTickers = data.retryTickers.map(
-        // (ticker) => THROTTLE().then( () => FETCH_ONE_STOCK(ticker) )
-        function(ticker){
-          return FETCH_ONE_STOCK(ticker);
+      if(results.length) {
+        log('\n\x1b[31m' + 'Search Results:' + '\x1b[0m');
+        printToScreen(results);
+        writeToCsv(results);
+
+        if(every(results, allResultsShort) || every(results, allResultsLong)) {
+          log('\n\x1b[32m' + 'All results agree. This has been a reliable signal about next trading day for the market' + '\x1b[0m');      
         }
-      );
-      // Adds individual catch for each retry, and sets null value so rest can continue if retry also results in error.
-      return Promise.all(promisifiedRetryTickers.map(p => p.catch(err => null)));
-    }
-  })
-  .then(()=>{
-    LOG("\n" + "\x1b[31m" + "Retries complete." + "\x1b[0m");
-  })
-  .then(()=>{ 
-    let results;
-    if (process.argv[2]) { // Use search filter if provided.
-      let searchFilter = process.argv[2];
-      results = SEARCH_SIGNALS(searchFilter);
-    } else {
-      results = data.allSignals;
-      LOG("\n" + "\x1b[31m" + "No search filter provided. All results: " + "\x1b[0m" + "\n");
-    }
-
-    if (results.length) {
-      LOG("\n" + "\x1b[31m" + "Search Results:" + "\x1b[0m");
-      PRINT_RESULTS(results);
-      WRITE_CSV(results);
-
-      if (every(results, allResultsShort) || every(results, allResultsLong)) {
-        LOG("\n" + "\x1b[32m" + "All results agree. This has been a reliable signal about next trading day for the market" + "\x1b[0m");      }
-
-    } else {
-      LOG("\n" + "\x1b[31m" + "No results." + "\x1b[0m");
-    }
-  })
-  .catch(e => e);
+      } 
+      else {
+        log('\n\x1b[31m' + 'No results.' + '\x1b[0m');
+      }
+    })
+    .catch(e => log(e));
 })();
 
-// Helpers
-function every (arr, filter) {
+
+// Helper functions.
+function every(arr, filter) {
   let result = true;
   for (let i = 0; i < arr.length; i ++) {
     if (filter(arr[i]) === false) {
@@ -104,9 +110,11 @@ function every (arr, filter) {
   }
   return result;
 }
-function allResultsShort (result) {
-  return result.trade === "short";
+
+function allResultsShort(result) {
+  return result.trade === 'short';
 }
-function allResultsLong (result) {
-  return result.trade === "long";
+
+function allResultsLong(result) {
+  return result.trade === 'long';
 }
